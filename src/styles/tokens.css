@@ -1,0 +1,22 @@
+@theme {
+  --color-bg-1: #2b2030;
+  --color-bg-2: #4a3550;
+  --color-bg-3: #654d68;
+  --color-card: #fafafa;
+  --color-ink: #1f1b24;
+  --color-muted: #6b6470;
+  --color-line: #e3dce6;
+  --color-eyebrow: #7a4a78;
+  --color-lavender: #c9a8f0;
+  --color-primary: #111827;
+  --color-secondary: #2563eb;
+  --color-ok: #1f7a4d;
+  --color-ok-bg: #e4f4ea;
+  --color-err: #b3261e;
+  --color-err-bg: #fbe9e7;
+  --color-warn: #8a5a00;
+  --color-warn-bg: #fff3d6;
+  --color-surface: #f7f3f8;
+  --font-sans: Inter, "Segoe UI", system-ui, sans-serif;
+  --font-serif: Fraunces, Georgia, serif;
+}
