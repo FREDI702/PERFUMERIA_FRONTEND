@@ -28,3 +28,77 @@
     animation: gold-shimmer 7s linear infinite;
   }
 }
+
+.perfume-scene-glow {
+  background: radial-gradient(
+    circle at 50% 42%,
+    var(--color-bg-3) 0%,
+    transparent 62%
+  );
+}
+
+.perfume-turn {
+  transform-style: preserve-3d;
+}
+
+@keyframes perfume-turn {
+  from {
+    transform: perspective(1200px) rotateY(-12deg) rotateX(2deg);
+  }
+  to {
+    transform: perspective(1200px) rotateY(12deg) rotateX(-2deg);
+  }
+}
+
+@keyframes perfume-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes perfume-shadow {
+  0%,
+  100% {
+    opacity: 0.55;
+    transform: scaleX(1);
+  }
+  50% {
+    opacity: 0.38;
+    transform: scaleX(0.86);
+  }
+}
+
+@keyframes halo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .perfume-turn {
+    animation: perfume-turn 12s ease-in-out infinite alternate;
+    will-change: transform;
+  }
+
+  .perfume-float {
+    animation: perfume-float 7s ease-in-out infinite;
+    will-change: transform;
+  }
+
+  .perfume-shadow {
+    animation: perfume-shadow 7s ease-in-out infinite;
+    will-change: opacity, transform;
+  }
+
+  .halo-spin {
+    animation: halo-spin 40s linear infinite;
+    will-change: transform;
+  }
+}
