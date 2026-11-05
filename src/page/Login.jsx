@@ -1,12 +1,14 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
+import PerfumeScene from '../components/PerfumeScene.jsx'
 import { login } from '../auth/mockApi.js'
 import { saveSession } from '../auth/session.js'
 import { validateEmail, validatePassword } from '../utils/validaciones.js'
 
 function Login() {
   const navigate = useNavigate()
-  const [email, setEmail] = useState('')
+  const location = useLocation()
+  const [email, setEmail] = useState(location.state?.email ?? '')
   const [password, setPassword] = useState('')
   const [touchedEmail, setTouchedEmail] = useState(false)
   const [touchedPassword, setTouchedPassword] = useState(false)
@@ -37,10 +39,13 @@ function Login() {
     try {
       const user = await login({ email, password })
       saveSession(user)
+      setLoading(false)
       setSuccess('¡Bienvenido a Perfumería Néctar!')
       window.setTimeout(() => {
-        navigate('/cuenta', { replace: true })
-      }, 900)
+        navigate(user.role === 'Administrador' ? '/admin/perfumes' : '/tienda', {
+          replace: true,
+        })
+      }, 1500)
     } catch {
       setError('Correo o contraseña incorrectos. Verifica tus datos e inténtalo de nuevo.')
       setLoading(false)
@@ -48,28 +53,17 @@ function Login() {
   }
 
   return (
-    <main className="flex min-h-screen flex-col bg-surface min-[900px]:flex-row">
-      <section
-        aria-hidden="true"
-        className="relative flex h-[330px] shrink-0 flex-col justify-center overflow-hidden bg-gradient-to-br from-bg-1 via-bg-2 to-bg-3 px-8 text-center min-[900px]:h-auto min-[900px]:w-1/2 min-[900px]:px-16"
-      >
-        <span className="mx-auto mb-6 h-2 w-2 rounded-full bg-lavender" />
-        <p className="font-serif text-4xl font-bold text-card min-[900px]:text-5xl">
-          Néctar Supremo
-        </p>
-        <p className="mt-4 text-xs font-semibold uppercase tracking-[0.4em] text-lavender">
-          Esencia · Elegancia · Estilo
-        </p>
-      </section>
+    <main className="flex min-h-screen flex-col bg-cream min-[900px]:flex-row">
+      <PerfumeScene />
 
-      <section className="flex flex-1 items-center justify-center px-4 py-8 min-[900px]:w-1/2 min-[900px]:px-8 min-[900px]:py-16">
+      <section className="flex flex-1 items-center justify-center bg-cream px-4 py-8 min-[900px]:w-1/2 min-[900px]:px-8 min-[900px]:py-16">
         <div className="w-full max-w-[605px] rounded-[28px] bg-card px-6 py-8 shadow-2xl min-[900px]:px-12 min-[900px]:py-12">
           <header className="mb-8">
             <p className="text-xs font-semibold uppercase tracking-[0.3em] text-eyebrow">
               Perfumería Néctar
             </p>
             <h1 className="mt-3 font-serif text-3xl font-bold text-ink sm:text-4xl">
-              Iniciar sesión
+              Hola de nuevo
             </h1>
             <p className="mt-2 text-sm text-muted">
               Accede a tu cuenta para gestionar tus compras de forma segura.
@@ -197,6 +191,26 @@ function Login() {
               {loading ? 'Validando credenciales…' : 'Iniciar sesión'}
             </button>
           </form>
+
+          <div className="mt-6 space-y-2 text-center text-sm text-muted">
+            <p>
+              ¿No tienes cuenta?{' '}
+              <Link
+                to="/registro"
+                className="rounded font-semibold text-eyebrow underline-offset-4 transition hover:text-ink hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-lavender"
+              >
+                Crear cuenta
+              </Link>
+            </p>
+            <p>
+              <Link
+                to="/"
+                className="rounded font-semibold text-eyebrow underline-offset-4 transition hover:text-ink hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-lavender"
+              >
+                ← Volver a inicio
+              </Link>
+            </p>
+          </div>
         </div>
       </section>
     </main>

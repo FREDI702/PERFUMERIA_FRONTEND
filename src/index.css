@@ -1,2 +1,30 @@
 @import "tailwindcss";
 @import "./styles/tokens.css";
+
+@keyframes gold-shimmer {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 200% 50%;
+  }
+}
+
+.text-gold-effect {
+  background-image: linear-gradient(
+    100deg,
+    var(--color-gold-dark) 0%,
+    var(--color-eyebrow) 45%,
+    var(--color-gold-dark) 90%
+  );
+  background-size: 200% auto;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .text-gold-effect {
+    animation: gold-shimmer 7s linear infinite;
+  }
+}
