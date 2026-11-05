@@ -173,7 +173,7 @@ function Receptions() {
       ) : null}
 
       <div className="mt-6 grid gap-6 xl:grid-cols-[1fr_1.4fr]">
-        <Card className="h-fit p-6 sm:p-6">
+        <Card className="h-fit min-w-0 p-6 sm:p-6">
           <h2 className="font-serif text-xl font-bold text-ink">
             Nueva recepción
           </h2>
@@ -285,7 +285,7 @@ function Receptions() {
           </form>
         </Card>
 
-        <div>
+        <div className="min-w-0">
           <h2 className="font-serif text-xl font-bold text-ink">
             Historial de recepciones
           </h2>

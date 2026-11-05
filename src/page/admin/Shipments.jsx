@@ -157,7 +157,7 @@ function Shipments() {
       ) : null}
 
       <div className="mt-6 grid gap-6 xl:grid-cols-[1fr_1.4fr]">
-        <Card className="h-fit p-6 sm:p-6">
+        <Card className="h-fit min-w-0 p-6 sm:p-6">
           <h2 className="font-serif text-xl font-bold text-ink">Nuevo envío</h2>
 
           <form noValidate onSubmit={handleSubmit} className="mt-4 space-y-4">
@@ -230,7 +230,7 @@ function Shipments() {
           </form>
         </Card>
 
-        <div>
+        <div className="min-w-0">
           <h2 className="font-serif text-xl font-bold text-ink">
             Envíos registrados
           </h2>

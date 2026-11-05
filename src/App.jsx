@@ -1,20 +1,22 @@
+import { lazy } from 'react'
 import { Navigate, Route, Routes } from 'react-router-dom'
 import AppLayout from './components/AppLayout.jsx'
-import Account from './page/Account.jsx'
 import AccessDenied from './page/AccessDenied.jsx'
-import Cart from './page/Cart.jsx'
-import Catalog from './page/Catalog.jsx'
 import Login from './page/Login.jsx'
-import Orders from './page/Orders.jsx'
 import Register from './page/Register.jsx'
 import SessionExpired from './page/SessionExpired.jsx'
 import Welcome from './page/Welcome.jsx'
-import Perfumes from './page/admin/Perfumes.jsx'
-import Receptions from './page/admin/Receptions.jsx'
-import Reports from './page/admin/Reports.jsx'
-import Sales from './page/admin/Sales.jsx'
-import Shipments from './page/admin/Shipments.jsx'
 import { getSession, isAuthenticated } from './auth/session.js'
+
+const Account = lazy(() => import('./page/Account.jsx'))
+const Cart = lazy(() => import('./page/Cart.jsx'))
+const Catalog = lazy(() => import('./page/Catalog.jsx'))
+const Orders = lazy(() => import('./page/Orders.jsx'))
+const Perfumes = lazy(() => import('./page/admin/Perfumes.jsx'))
+const Receptions = lazy(() => import('./page/admin/Receptions.jsx'))
+const Reports = lazy(() => import('./page/admin/Reports.jsx'))
+const Sales = lazy(() => import('./page/admin/Sales.jsx'))
+const Shipments = lazy(() => import('./page/admin/Shipments.jsx'))
 
 function roleHome(session) {
   return session?.role === 'Administrador' ? '/admin/perfumes' : '/tienda'

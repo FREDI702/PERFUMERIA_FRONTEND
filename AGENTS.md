@@ -13,7 +13,7 @@ Tienda virtual de perfumes. React 19 + Vite 8 + Tailwind v4, JavaScript (`.jsx`,
 
 - Implementadas las pantallas de la tabla de rutas: bienvenida, login (HU-1), registro (HU-2), sesión expirada, catálogo, carrito, pedidos, cuenta y panel de administración (perfumes, ventas, envíos, recepción y reportes).
 - Rutas existentes: `/`, `/login`, `/registro`, `/sesion-expirada`, `/tienda`, `/carrito`, `/pedidos`, `/cuenta`, `/admin` → `/admin/perfumes`, `/admin/perfumes`, `/admin/ventas`, `/admin/envios`, `/admin/recepcion`, `/admin/reportes` y `*` → `/`.
-- Componentes en `src/components/`: `AppLayout`, `Sidebar`, `Card`, `Button`, `Field`, `PasswordField`, `Banner`, `ConfirmDialog`, `Table`, `ProductCard`, `BottleArt`, `ErrorBoundary` y `PerfumeScene`.
+- Componentes en `src/components/`: `AppLayout`, `Sidebar`, `Card`, `Button`, `Field`, `PasswordField`, `Banner`, `ConfirmDialog`, `Table`, `ProductCard`, `BottleArt`, `PageLoader`, `ErrorBoundary` y `PerfumeScene`.
 - `ProtectedRoute`, `PublicOnlyRoute` y `RoleRoute` están dentro de `src/App.jsx`. `src/auth/` tiene `session.js`, `mockApi.js` y `useIdleLogout.js`.
 - Datos simulados en `src/auth/mockApi.js` (usuarios Cliente/Administrador, productos, ventas, envíos y recepciones). El carrito vive en memoria en `src/cart/cartStore.js`.
 - `src/page/` es la carpeta correcta; `page/` en la raíz y `Nueva carpeta/` están vacías. `src/App.css` no existe.
@@ -71,9 +71,9 @@ Sin sesión → `/login`. Cliente en ruta de administrador → "Acceso denegado"
 - HU-6/HU-7: cliente registrado; fecha y hora automáticas; total calculado; no vender sin productos ni más que el stock: "Stock insuficiente: solo hay N unidad(es) de «nombre»."; subtotal por línea; editar o quitar líneas antes de confirmar; éxito "¡Venta #N registrada con éxito!".
 - HU-8: venta existente; dirección, ciudad y teléfono de 9 dígitos obligatorios; estados pendiente, en camino y entregado; actualizar estado y listar.
 - HU-9: fecha y proveedor; perfumes con cantidad > 0 y estado Bueno/Con observaciones/Dañado; al confirmar sube el stock; historial y detalle.
-- HU-11: catálogo en ≤3 s con 50 usuarios; parcial: `loading="lazy"` y esqueletos implementados, falta `React.lazy`.
+- HU-11: catálogo en ≤3 s con 50 usuarios; páginas internas con `React.lazy` + `Suspense`, `loading="lazy"` y esqueletos.
 - HU-12: token en `Authorization`; cada rol solo accede a lo suyo; nada de `dangerouslySetInnerHTML`; errores genéricos "Ocurrió un error inesperado. Inténtalo de nuevo más tarde.".
-- HU-13/HU-15: probar 375, 768 y 1100 px sin scroll horizontal; Chrome/Edge/Firefox/Safari y móviles; si el navegador es viejo muestra "Tu navegador es demasiado antiguo…"; `browserslist` aún no está en `package.json`.
+- HU-13/HU-15: probar 375, 768 y 1100 px sin scroll horizontal; Chrome/Edge/Firefox/Safari y móviles; si el navegador es viejo muestra "Tu navegador es demasiado antiguo…" (pendiente); `browserslist` ya está en `package.json`.
 - HU-14: `ErrorBoundary`, mensajes amigables, compra en ≤5 pasos, botones y mensajes consistentes, `*` en obligatorios.
 
 ## Antes de terminar
