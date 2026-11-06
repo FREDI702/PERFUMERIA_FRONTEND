@@ -4,7 +4,7 @@ Frontend de la tienda virtual de Perfumería Néctar, desarrollado con React y V
 
 ## Requisitos
 
-- Node.js 22.12 o superior
+- Node.js 24 o superior
 - npm
 
 ## Desarrollo

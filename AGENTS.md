@@ -10,6 +10,7 @@ Tienda virtual de perfumes. React 19 + Vite 8 + Tailwind v4, JavaScript (`.jsx`,
 - `npm run build` — build a `dist/`. Antes de terminar: `lint`, `test` y luego `build` deben pasar.
 - `npm run preview` — sirve el build.
 - Sin typecheck ni codegen. No agregues scripts más allá de los existentes.
+- Node 24 en CI y local: `jsdom` 31 exige `^22.22.2 || ^24.15.0`; con Node 22.12 `npm test` falla.
 - Login de prueba (mock): `cliente.perfumeria@gmail.com` / `Perfume2026!` (definido en `src/auth/mockApi.js`).
 
 ## 2. Estado actual (no asumas más de lo que existe)
