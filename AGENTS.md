@@ -18,7 +18,7 @@ Tienda virtual de perfumes. React 19 + Vite 8 + Tailwind v4, JavaScript (`.jsx`,
 - `ProtectedRoute` y `PublicOnlyRoute` están definidos **dentro de `App.jsx`**, no en archivos aparte.
 - Páginas existentes: `src/page/Login.jsx`, `src/page/Account.jsx`.
 - Auth: `src/auth/session.js`, `src/auth/mockApi.js`. Validaciones: `src/utils/validaciones.js` y `src/utils/validacionesHU5.js`.
-- Pruebas: `src/utils/validaciones.test.js` con Vitest (`npm test`).
+- Pruebas: `src/utils/validaciones.test.js` (funciones) y `src/page/Login.test.jsx` (interfaz) con Vitest (`npm test`).
 - Aún no existen `src/components/`, catálogo/carrito/pedidos/admin, ni `RoleRoute`/`useIdleLogout`. Las secciones 4–6 describen el **objetivo**; crea solo lo que la HU en curso necesite.
 
 ## 3. Reglas
@@ -26,7 +26,7 @@ Tienda virtual de perfumes. React 19 + Vite 8 + Tailwind v4, JavaScript (`.jsx`,
 - Una HU por vez, con cambios pequeños. Antes de terminar, repasa uno por uno los criterios de esa HU.
 - Toda la interfaz va en **español**: textos, errores, etiquetas, `alt`, `aria-label`.
 - Estilos: **Tailwind v4** vía `@tailwindcss/vite`; no existe `tailwind.config.js`. Colores y fuentes salen solo de `src/styles/tokens.css` (`@theme`) y se usan como clases (`bg-primary`, `font-serif`). Nunca hex sueltos ni librerías de UI (Bootstrap, MUI).
-- Dependencias: solo se permite instalar `react-router-dom`. Vitest ya está como `devDependency` para pruebas; para cualquier otra, pregunta.
+- Dependencias: solo se permite instalar `react-router-dom`. Vitest y Testing Library ya están como `devDependency` para pruebas; para cualquier otra, pregunta.
 - `Fraunces` se carga con `<link>` de Google Fonts en `index.html`; no se instala paquete.
 - API: URL desde `import.meta.env.VITE_API_URL` (local `http://localhost:8080`, con **http**; con https aparece `EPROTO: The TLS handshake failed`). Los endpoints no están definidos: no los inventes. Mientras tanto usa datos simulados aislados en `src/auth/mockApi.js`.
 - No toques el backend.

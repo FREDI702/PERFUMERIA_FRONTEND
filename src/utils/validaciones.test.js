@@ -13,6 +13,10 @@ describe('esCorreoValido', () => {
   it('acepta un correo con formato válido', () => {
     expect(esCorreoValido('ana@correo.com')).toBe(true)
   })
+
+  it('acepta un correo válido con espacios alrededor', () => {
+    expect(esCorreoValido(' ana@correo.com ')).toBe(true)
+  })
 })
 
 describe('esClaveValida', () => {
@@ -22,5 +26,9 @@ describe('esClaveValida', () => {
 
   it('acepta clave de 12 caracteres', () => {
     expect(esClaveValida('a'.repeat(12))).toBe(true)
+  })
+
+  it('rechaza una clave vacía', () => {
+    expect(esClaveValida('')).toBe(false)
   })
 })
