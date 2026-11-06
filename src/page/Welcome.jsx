@@ -30,7 +30,9 @@ function Welcome() {
           </p>
           <h1 className="mt-4 font-serif text-4xl font-bold leading-tight text-ink min-[900px]:text-6xl">
             <span className="text-gold-effect block">Bienvenido a</span>
-            <span className="text-gold-effect block">Perfumería Néctar</span>
+            <span className="text-gold-effect block" style={{ animationDelay: '-1.6s' }}>
+              Perfumería Néctar
+            </span>
           </h1>
           <p className="mt-5 text-base text-muted">Elige cómo deseas continuar.</p>
 

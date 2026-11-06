@@ -36,7 +36,8 @@ Tienda virtual de perfumes. React 19 + Vite 8 + Tailwind v4, JavaScript (`.jsx`,
 ## Diseño
 
 - Pantallas de acceso: split 50/50. Escena morada (`bg-1 → bg-3`, `PerfumeScene`) a la izquierda y formulario a la derecha sobre `card`. Bajo 900 px la escena pasa a cabecera de ~330 px y el formulario sube como hoja.
-- Bienvenida: frasco dorado con halo, giro 3D suave, flotación y sombra animada (`.perfume-turn`, `.perfume-float`, `.perfume-shadow`, `.halo-spin`); se desactiva con `prefers-reduced-motion`.
+- Bienvenida: escena morada con halo, foto de producto en tarjeta redondeada, giro 3D suave, flotación y sombra animada (`.perfume-turn`, `.perfume-float`, `.perfume-shadow`, `.halo-spin`); se desactiva con `prefers-reduced-motion`. La imagen vive en `public/images/dior-homme-intense.png`.
+- El título de bienvenida usa `text-gold-effect` con degradado animado amarillo → negro → azul, contorno oscuro y brillo azulado; la segunda línea lleva un desfase.
 - Pantallas internas: fondo `surface`, Sidebar oscuro `bg-1` de 250 px; en celular es un menú desplegable.
 - Quiebres 640 px y 900 px. Nunca scroll horizontal.
 - Accesibilidad: contraste 4.5:1, foco visible, `<label>` en todo campo, objetivos táctiles ≥44 px, texto ≥14 px, respeta `prefers-reduced-motion`.
