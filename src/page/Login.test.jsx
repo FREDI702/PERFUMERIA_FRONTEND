@@ -1,6 +1,6 @@
 import { act, fireEvent, render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
-import { describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import Login from './Login.jsx'
 
 function renderLogin() {
@@ -11,7 +11,21 @@ function renderLogin() {
   )
 }
 
+function fillCredentials(email, password) {
+  fireEvent.change(screen.getByLabelText(/Correo electrónico/), {
+    target: { value: email },
+  })
+  fireEvent.change(screen.getByLabelText(/Contraseña/), {
+    target: { value: password },
+  })
+  fireEvent.click(screen.getByRole('button', { name: 'Iniciar sesión' }))
+}
+
 describe('Login', () => {
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
   it('muestra los errores al enviar el formulario vacío', () => {
     renderLogin()
 
@@ -22,36 +36,32 @@ describe('Login', () => {
   })
 
   it('muestra un mensaje de error con credenciales incorrectas', async () => {
+    vi.useFakeTimers()
     renderLogin()
 
-    fireEvent.change(screen.getByLabelText(/Correo electrónico/), {
-      target: { value: 'cliente.perfumeria@gmail.com' },
-    })
-    fireEvent.change(screen.getByLabelText(/Contraseña/), {
-      target: { value: 'ClaveIncorrecta1' },
-    })
-    fireEvent.click(screen.getByRole('button', { name: 'Iniciar sesión' }))
+    fillCredentials('cliente.perfumeria@gmail.com', 'ClaveIncorrecta1')
 
-    expect(await screen.findByText(/Correo o contraseña incorrectos/)).toBeTruthy()
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(700)
+    })
+
+    expect(screen.getByText(/Correo o contraseña incorrectos/)).toBeTruthy()
   })
 
   it('muestra la bienvenida con credenciales válidas', async () => {
+    vi.useFakeTimers()
     renderLogin()
 
-    fireEvent.change(screen.getByLabelText(/Correo electrónico/), {
-      target: { value: 'cliente.perfumeria@gmail.com' },
-    })
-    fireEvent.change(screen.getByLabelText(/Contraseña/), {
-      target: { value: 'Perfume2026!' },
-    })
-    fireEvent.click(screen.getByRole('button', { name: 'Iniciar sesión' }))
-
-    expect(await screen.findByText('¡Bienvenido a Perfumería Néctar!')).toBeTruthy()
+    fillCredentials('cliente.perfumeria@gmail.com', 'Perfume2026!')
 
     await act(async () => {
-      await new Promise((resolve) => {
-        window.setTimeout(resolve, 900)
-      })
+      await vi.advanceTimersByTimeAsync(700)
+    })
+
+    expect(screen.getByText('¡Bienvenido a Perfumería Néctar!')).toBeTruthy()
+
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(900)
     })
   })
 })
