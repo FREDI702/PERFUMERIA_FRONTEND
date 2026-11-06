@@ -6,7 +6,7 @@ Tienda virtual de perfumes. React 19 + Vite 8 + Tailwind v4, JavaScript (`.jsx`,
 
 - `npm run dev` — servidor de desarrollo en `http://localhost:5173`. Reinícialo si cambias `vite.config.js` o instalas paquetes.
 - `npm run lint` — ESLint (`eslint .`, ignora `dist`).
-- `npm test` — Vitest (`vitest run`). Las pruebas viven junto al código como `*.test.js`.
+- `npm test` — Vitest (`vitest run`). Las pruebas viven junto al código como `*.test.js` y `*.test.jsx`.
 - `npm run build` — build a `dist/`. Antes de terminar: `lint`, `test` y luego `build` deben pasar.
 - `npm run preview` — sirve el build.
 - Sin typecheck ni codegen. No agregues scripts más allá de los existentes.

@@ -16,7 +16,7 @@ npm run dev
 
 ## Validación
 
-Las pruebas de funciones están junto al código en `src/utils/validaciones.test.js` y se ejecutan con Vitest.
+Las pruebas de validaciones y de la interfaz de inicio de sesión están junto al código en `src/utils/validaciones.test.js` y `src/page/Login.test.jsx`. Vitest las ejecuta con `npm test`.
 
 ```sh
 npm run lint
