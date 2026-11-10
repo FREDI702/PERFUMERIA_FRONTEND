@@ -92,7 +92,11 @@ export function validateName(value) {
 export function validatePrice(value) {
   const price = Number(value)
 
-  if (value === '' || Number.isNaN(price)) {
+  if (
+    (typeof value !== 'number' &&
+      (typeof value !== 'string' || value.trim() === '')) ||
+    !Number.isFinite(price)
+  ) {
     return 'Ingresa un precio válido.'
   }
 
@@ -106,7 +110,11 @@ export function validatePrice(value) {
 export function validateStock(value) {
   const stock = Number(value)
 
-  if (value === '' || Number.isNaN(stock)) {
+  if (
+    (typeof value !== 'number' &&
+      (typeof value !== 'string' || value.trim() === '')) ||
+    !Number.isSafeInteger(stock)
+  ) {
     return 'Ingresa un stock válido.'
   }
 
@@ -132,8 +140,12 @@ export function validatePhone(value) {
 export function validateQuantity(value, max) {
   const quantity = Number(value)
 
-  if (value === '' || Number.isNaN(quantity) || quantity <= 0) {
-    return 'La cantidad debe ser mayor que 0.'
+  if (
+    value === '' ||
+    !Number.isSafeInteger(quantity) ||
+    quantity <= 0
+  ) {
+    return 'La cantidad debe ser un número entero mayor que 0.'
   }
 
   if (max !== undefined && quantity > max) {

@@ -16,6 +16,7 @@ function Login() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
+  const accessMessage = location.state?.message
 
   const emailError = touchedEmail ? validateEmail(email) : ''
   const passwordError = touchedPassword ? validatePassword(password) : ''
@@ -71,6 +72,15 @@ function Login() {
           </header>
 
           <form noValidate onSubmit={handleSubmit} className="space-y-5">
+            {accessMessage ? (
+              <div
+                role="status"
+                className="rounded-xl border border-line bg-surface px-4 py-3 text-sm text-ink"
+              >
+                {accessMessage}
+              </div>
+            ) : null}
+
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-ink">
                 Correo electrónico <span className="text-err">*</span>

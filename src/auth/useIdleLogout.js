@@ -16,7 +16,11 @@ export function useIdleLogout() {
       const session = getSession()
 
       if (!session) {
-        return
+        navigate('/login', {
+          replace: true,
+          state: { message: 'Inicia sesión para continuar.' },
+        })
+        return true
       }
 
       const lastActivity = session.lastActivity ?? Date.now()
@@ -24,10 +28,17 @@ export function useIdleLogout() {
       if (Date.now() - lastActivity >= INACTIVITY_MS) {
         clearSession()
         navigate('/sesion-expirada', { replace: true })
+        return true
       }
+
+      return false
     }
 
     const handleActivity = () => {
+      if (expire()) {
+        return
+      }
+
       const now = Date.now()
 
       if (now - lastTouch >= TOUCH_INTERVAL_MS) {
