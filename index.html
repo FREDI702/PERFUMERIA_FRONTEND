@@ -14,6 +14,12 @@
   </head>
   <body>
     <div id="root"></div>
+    <script>
+      if (!('noModule' in document.createElement('script'))) {
+        document.getElementById('root').textContent =
+          'Tu navegador es demasiado antiguo. Actualízalo a la última versión de Chrome, Edge, Firefox o Safari.'
+      }
+    </script>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

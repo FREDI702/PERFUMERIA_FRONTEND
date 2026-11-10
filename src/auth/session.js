@@ -1,6 +1,29 @@
 const SESSION_KEY = 'perfumeria.session'
 
+function isValidSession(session) {
+  return Boolean(
+    session &&
+      typeof session.email === 'string' &&
+      typeof session.name === 'string' &&
+      ['Cliente', 'Administrador'].includes(session.role) &&
+      typeof session.token === 'string' &&
+      session.token.length > 0 &&
+      Number.isFinite(session.lastActivity),
+  )
+}
+
 export function saveSession(user) {
+  if (
+    !user ||
+    typeof user.email !== 'string' ||
+    typeof user.name !== 'string' ||
+    !['Cliente', 'Administrador'].includes(user.role) ||
+    typeof user.token !== 'string' ||
+    user.token.length === 0
+  ) {
+    throw new Error('No se puede guardar una sesión inválida.')
+  }
+
   sessionStorage.setItem(
     SESSION_KEY,
     JSON.stringify({
@@ -41,7 +64,14 @@ export function getSession() {
   }
 
   try {
-    return JSON.parse(raw)
+    const session = JSON.parse(raw)
+
+    if (!isValidSession(session)) {
+      sessionStorage.removeItem(SESSION_KEY)
+      return null
+    }
+
+    return session
   } catch {
     sessionStorage.removeItem(SESSION_KEY)
     return null

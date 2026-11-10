@@ -28,7 +28,14 @@ function ProductCard({ product, onAdd }) {
             className="h-36 w-auto object-contain"
           />
         ) : (
-          <BottleArt tone={product.tone} label={product.name} className="h-36 w-auto" />
+          <div className="flex flex-col items-center">
+            <BottleArt
+              tone={product.tone}
+              label={`Sin foto de ${product.name}`}
+              className="h-32 w-auto"
+            />
+            <span className="text-xs font-medium text-muted">Sin foto</span>
+          </div>
         )}
       </div>
 
