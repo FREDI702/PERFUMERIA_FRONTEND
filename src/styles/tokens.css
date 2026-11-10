@@ -17,6 +17,22 @@
   --color-warn: #8a5a00;
   --color-warn-bg: #fff3d6;
   --color-surface: #f7f3f8;
+  --color-cream: #f7f1e6;
+  --color-gold: #c9a86a;
+  --color-gold-light: #f2dfae;
+  --color-gold-dark: #8a6a32;
+  --color-bottle-rose: #d98ca6;
+  --color-bottle-rose-light: #f4c9d6;
+  --color-bottle-rose-dark: #9b4d68;
+  --color-bottle-amber: #c98a3a;
+  --color-bottle-amber-light: #f0d3a0;
+  --color-bottle-amber-dark: #7a4f1d;
+  --color-bottle-forest: #4f7a62;
+  --color-bottle-forest-light: #a9c9b6;
+  --color-bottle-forest-dark: #2d4a39;
+  --color-bottle-sky: #6f8fb5;
+  --color-bottle-sky-light: #b9cee4;
+  --color-bottle-sky-dark: #3f5c7a;
   --font-sans: Inter, "Segoe UI", system-ui, sans-serif;
   --font-serif: Fraunces, Georgia, serif;
 }

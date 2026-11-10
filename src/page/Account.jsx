@@ -1,39 +1,109 @@
-import { useNavigate } from 'react-router-dom'
+import { useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import Card from '../components/Card.jsx'
+import Button from '../components/Button.jsx'
+import ConfirmDialog from '../components/ConfirmDialog.jsx'
 import { clearSession, getSession } from '../auth/session.js'
+
+const CLIENT_LINKS = [
+  { to: '/tienda', label: 'Ir a la tienda' },
+  { to: '/carrito', label: 'Ver mi carrito' },
+  { to: '/pedidos', label: 'Mis pedidos' },
+]
+
+const ADMIN_LINKS = [
+  { to: '/admin/perfumes', label: 'Registrar perfumes' },
+  { to: '/admin/ventas', label: 'Registrar ventas' },
+  { to: '/admin/envios', label: 'Gestionar envíos' },
+  { to: '/admin/recepcion', label: 'Recepción de carga' },
+]
 
 function Account() {
   const navigate = useNavigate()
   const session = getSession()
+  const [confirming, setConfirming] = useState(false)
+  const links = session?.role === 'Administrador' ? ADMIN_LINKS : CLIENT_LINKS
 
   const handleLogout = () => {
     clearSession()
+    setConfirming(false)
     navigate('/', { replace: true })
   }
 
   return (
-    <main className="min-h-screen bg-surface px-4 py-10">
-      <section className="mx-auto w-full max-w-[605px] rounded-[28px] bg-card p-6 shadow-xl sm:p-12">
-        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-eyebrow">
-          Mi cuenta
+    <div className="mx-auto w-full max-w-4xl">
+      <p className="text-xs font-semibold uppercase tracking-[0.3em] text-eyebrow">
+        Mi cuenta
+      </p>
+      <h1 className="mt-2 font-serif text-3xl font-bold text-ink sm:text-4xl">
+        Hola, {session?.name ?? 'Cliente'}
+      </h1>
+      <p className="mt-2 text-sm text-muted">
+        Administra tu sesión y accede rápido a las secciones de la tienda.
+      </p>
+
+      <div className="mt-6 grid gap-5 md:grid-cols-2">
+        <Card className="p-6 sm:p-6">
+          <p className="text-sm font-semibold text-ink">Datos de la cuenta</p>
+          <dl className="mt-4 space-y-3 text-sm">
+            <div>
+              <dt className="text-muted">Nombre</dt>
+              <dd className="font-semibold text-ink">{session?.name}</dd>
+            </div>
+            <div>
+              <dt className="text-muted">Correo</dt>
+              <dd className="font-semibold text-ink">{session?.email}</dd>
+            </div>
+            <div>
+              <dt className="text-muted">Rol</dt>
+              <dd className="mt-1 inline-block rounded-full bg-ok-bg px-3 py-1 font-semibold text-ok">
+                {session?.role ?? 'Cliente'}
+              </dd>
+            </div>
+          </dl>
+        </Card>
+
+        <Card className="p-6 sm:p-6">
+          <p className="text-sm font-semibold text-ink">Accesos rápidos</p>
+          <div className="mt-4 space-y-2">
+            {links.map((link) => (
+              <Link
+                key={link.to}
+                to={link.to}
+                className="flex min-h-11 items-center justify-between rounded-xl border border-line px-4 text-sm font-semibold text-ink transition hover:bg-surface focus:outline-none focus:ring-4 focus:ring-surface"
+              >
+                {link.label}
+                <span aria-hidden="true">→</span>
+              </Link>
+            ))}
+          </div>
+        </Card>
+      </div>
+
+      <div className="mt-6 rounded-3xl border border-line bg-card p-6 shadow-sm">
+        <p className="font-semibold text-ink">Cierre de sesión</p>
+        <p className="mt-1 text-sm text-muted">
+          Al cerrar sesión se borrarán tus datos de esta sesión. El botón Atrás no
+          volverá a mostrar tu cuenta.
         </p>
-        <h1 className="mt-3 font-serif text-3xl font-bold text-ink">
-          ¡Bienvenido a Perfumería Néctar!
-        </h1>
-        <p className="mt-2 text-sm text-muted">
-          Sesión iniciada como <span className="font-semibold text-ink">{session?.email}</span>
-        </p>
-        <p className="mt-3 inline-block rounded-full bg-ok-bg px-3 py-1 text-sm font-semibold text-ok">
-          Rol: {session?.role ?? 'Cliente'}
-        </p>
-        <button
-          type="button"
-          onClick={handleLogout}
-          className="mt-8 min-h-11 w-full rounded-[14px] bg-primary px-4 py-3 font-bold text-card transition hover:opacity-90 focus:outline-none focus:ring-4 focus:ring-line"
+        <Button
+          variant="primary"
+          onClick={() => setConfirming(true)}
+          className="mt-4 w-full sm:w-auto"
         >
           Cerrar sesión
-        </button>
-      </section>
-    </main>
+        </Button>
+      </div>
+
+      <ConfirmDialog
+        open={confirming}
+        title="Cerrar sesión"
+        message="¿Seguro que deseas cerrar sesión? Tendrás que volver a ingresar tus datos."
+        confirmText="Sí, cerrar sesión"
+        onConfirm={handleLogout}
+        onCancel={() => setConfirming(false)}
+      />
+    </div>
   )
 }
 

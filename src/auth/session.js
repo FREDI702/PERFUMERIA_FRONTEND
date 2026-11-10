@@ -17,6 +17,22 @@ export function clearSession() {
   sessionStorage.removeItem(SESSION_KEY)
 }
 
+export function touchSession() {
+  const session = getSession()
+
+  if (!session) {
+    return
+  }
+
+  sessionStorage.setItem(
+    SESSION_KEY,
+    JSON.stringify({
+      ...session,
+      lastActivity: Date.now(),
+    }),
+  )
+}
+
 export function getSession() {
   const raw = sessionStorage.getItem(SESSION_KEY)
 
