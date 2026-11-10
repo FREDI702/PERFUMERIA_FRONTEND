@@ -82,7 +82,7 @@ describe('Login', () => {
     expect(screen.getByText('¡Bienvenido a Perfumería Néctar!')).toBeTruthy()
 
     await act(async () => {
-      await vi.advanceTimersByTimeAsync(900)
+      await vi.advanceTimersByTimeAsync(1500)
     })
   })
 })
