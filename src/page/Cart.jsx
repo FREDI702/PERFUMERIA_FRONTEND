@@ -331,8 +331,7 @@ function Cart() {
                 options={[{ value: '', label: 'Selecciona un método' }, { value: 'tarjeta', label: 'Tarjeta' }, { value: 'yape', label: 'Yape' }, { value: 'efectivo', label: 'Efectivo' }]} />
               {checkout.payment === 'yape' ? (
                 <div className="rounded-2xl border border-line bg-surface p-4 text-center">
-                  <p className="font-semibold text-ink">QR de Yape</p>
-                  <img src="/pagos/yape-qr.png" alt="Código QR de Yape" className="mx-auto mt-3 max-h-60 max-w-full object-contain" />
+                  <p className="font-semibold text-ink">Yape simulado</p>
                   <p className="mt-3 text-sm text-muted">Demostración: no realices transferencias. Este sistema no valida pagos.</p>
                 </div>
               ) : null}
@@ -341,7 +340,7 @@ function Cart() {
               ) : null}
               {checkout.payment === 'efectivo' && checkout.delivery ? (
                 <p className="text-sm text-muted">
-                  {checkout.delivery === 'delivery' ? 'Pago contra entrega.' : 'Pago al recoger en tienda.'} El pago quedará pendiente de confirmación.
+                  Pago en efectivo simulado. No realices pagos; el estado es solo de demostración.
                 </p>
               ) : null}
               <Field id="checkout-receipt" label="Comprobante" as="select" required

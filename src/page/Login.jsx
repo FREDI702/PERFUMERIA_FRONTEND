@@ -39,6 +39,7 @@ function Login() {
 
     try {
       const user = await login({ email, password })
+      setPassword('')
       saveSession(user)
       setLoading(false)
       setSuccess('¡Bienvenido a Perfumería Néctar!')
@@ -67,7 +68,7 @@ function Login() {
               Hola de nuevo
             </h1>
             <p className="mt-2 text-sm text-muted">
-              Accede a tu cuenta para gestionar tus compras de forma segura.
+              Demostración: usa únicamente datos ficticios y una contraseña que no uses en otros sitios.
             </p>
           </header>
 
@@ -119,7 +120,7 @@ function Login() {
                   ? `✕ ${emailError}`
                   : emailValid
                     ? '✓ Correo válido'
-                    : 'Usa un correo real, sin dominios temporales.'}
+                    : 'Usa un correo ficticio válido, sin dominios temporales.'}
               </p>
             </div>
 

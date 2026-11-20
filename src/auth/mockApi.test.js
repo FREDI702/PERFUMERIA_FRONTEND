@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { webcrypto } from 'node:crypto'
 import { saveSession } from './session.js'
 import {
   createPerfume,
@@ -12,6 +13,7 @@ import {
   getSales,
   getSalesByClient,
   getShipments,
+  login,
   register,
   updatePerfume,
   updateShipmentStatus,
@@ -41,6 +43,24 @@ describe('reglas de negocio del mock API', () => {
 
   afterEach(() => {
     vi.useRealTimers()
+    vi.restoreAllMocks()
+    vi.unstubAllGlobals()
+  })
+
+  it('deriva la contraseña de una cuenta de prueba y permite iniciar sesión', async () => {
+    vi.stubGlobal('crypto', webcrypto)
+    const deriveBits = vi.spyOn(webcrypto.subtle, 'deriveBits')
+    const email = 'cuenta-prueba-seguridad@gmail.com'
+    const password = 'PruebaSegura123'
+
+    await register({ name: 'Usuario de prueba', email, password })
+    expect(deriveBits).toHaveBeenCalledWith(
+      expect.objectContaining({ name: 'PBKDF2', hash: 'SHA-256', iterations: 210000 }),
+      expect.anything(),
+      256,
+    )
+    expect((await login({ email, password })).email).toBe(email)
+    await expect(login({ email, password: 'ContraseñaIncorrecta123' })).rejects.toThrow('credenciales')
   })
 
   it('registra pedidos pendientes y solo permite al administrador confirmar el pago', async () => {

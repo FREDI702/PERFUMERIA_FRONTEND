@@ -35,7 +35,7 @@ function Welcome() {
 
         <div className="relative mx-auto flex w-full max-w-[520px] flex-1 flex-col justify-center">
           <p className="text-xs font-semibold uppercase tracking-[0.3em] text-gold-dark">
-            Acceso seguro
+            Demostración
           </p>
           <h1 className="mt-4 font-serif text-4xl font-bold leading-tight text-ink min-[900px]:text-6xl">
             <span className="text-gold-effect block">Bienvenido a</span>
@@ -43,7 +43,9 @@ function Welcome() {
               Perfumería Néctar
             </span>
           </h1>
-          <p className="mt-5 text-base text-muted">Elige cómo deseas continuar.</p>
+          <p className="mt-5 text-base text-muted">
+            Sitio de prueba: no ingreses datos personales ni contraseñas reales y no realices pagos.
+          </p>
 
           <nav aria-label="Opciones de acceso" className="mt-10 space-y-3">
             <Link

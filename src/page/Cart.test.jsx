@@ -55,9 +55,10 @@ describe('datos y métodos de pago del carrito', () => {
     expect(screen.queryByLabelText(/RUC/)).toBeNull()
   })
 
-  it('muestra el QR y no pide datos de tarjeta', () => {
+  it('advierte que Yape es simulado y no pide datos de tarjeta', () => {
     choose('Método de pago', 'yape')
-    expect(screen.getByRole('img', { name: 'Código QR de Yape' })).toBeTruthy()
+    expect(screen.getByText('Yape simulado')).toBeTruthy()
+    expect(screen.queryByRole('img', { name: 'Código QR de Yape' })).toBeNull()
     expect(screen.getByText(/no realices transferencias/)).toBeTruthy()
     choose('Método de pago', 'tarjeta')
     expect(screen.getByText(/no se solicitan datos de tarjeta/)).toBeTruthy()
@@ -109,7 +110,7 @@ describe('datos y métodos de pago del carrito', () => {
     choose('Teléfono', '987654321')
     choose('Modalidad de entrega', 'recojo')
     choose('Método de pago', 'efectivo')
-    expect(screen.getByText(/Pago al recoger en tienda/)).toBeTruthy()
+    expect(screen.getByText(/Pago en efectivo simulado/)).toBeTruthy()
     choose('Comprobante', 'boleta')
     choose('DNI', '12345678')
     fireEvent.click(screen.getByRole('button', { name: 'Registrar pedido simulado' }))

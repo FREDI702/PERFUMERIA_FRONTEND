@@ -293,15 +293,34 @@ let nextSaleId = 4
 let nextShipmentId = 3
 let nextReceptionId = 3
 
+async function derivePassword(password, salt) {
+  const key = await crypto.subtle.importKey(
+    'raw',
+    new TextEncoder().encode(password),
+    'PBKDF2',
+    false,
+    ['deriveBits'],
+  )
+  const bits = await crypto.subtle.deriveBits(
+    { name: 'PBKDF2', hash: 'SHA-256', salt, iterations: 210000 },
+    key,
+    256,
+  )
+  return Array.from(new Uint8Array(bits), (byte) => byte.toString(16).padStart(2, '0')).join('')
+}
+
 export async function login({ email, password }) {
   await wait(700)
 
   const normalizedEmail = email.trim().toLowerCase()
-  const user = users.find(
-    (item) => item.email === normalizedEmail && item.password === password,
-  )
+  const user = users.find((item) => item.email === normalizedEmail)
 
-  if (!user) {
+  if (
+    !user ||
+    (user.passwordSalt
+      ? await derivePassword(password, user.passwordSalt) !== user.passwordHash
+      : user.password !== password)
+  ) {
     throw new Error('credenciales')
   }
 
@@ -333,9 +352,17 @@ export async function register({ name, email, password }) {
     throw new Error('duplicate')
   }
 
+  const passwordSalt = crypto.getRandomValues(new Uint8Array(16))
+  const passwordHash = await derivePassword(password, passwordSalt)
+
+  if (users.some((user) => user.email === normalizedEmail)) {
+    throw new Error('duplicate')
+  }
+
   const user = {
     email: normalizedEmail,
-    password,
+    passwordSalt,
+    passwordHash,
     name: name.trim(),
     role: 'Cliente',
   }
