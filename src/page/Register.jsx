@@ -66,6 +66,9 @@ function Register() {
 
     try {
       await register({ name, email, password })
+      setPassword('')
+      setConfirmation('')
+      setTouched((current) => ({ ...current, password: false, confirmation: false }))
       setSuccess('¡Cuenta creada con éxito! Te llevamos al inicio de sesión…')
       window.setTimeout(() => {
         navigate('/login', { replace: true, state: { email } })
@@ -89,13 +92,13 @@ function Register() {
         <Card className="w-full max-w-[605px]">
           <header className="mb-8">
             <p className="text-xs font-semibold uppercase tracking-[0.3em] text-gold-dark">
-              Acceso seguro
+              Demostración
             </p>
             <h1 className="mt-3 font-serif text-3xl font-bold text-ink sm:text-4xl">
               Crear cuenta
             </h1>
             <p className="mt-2 text-sm text-muted">
-              Regístrate para comprar tus perfumes favoritos y seguir tus pedidos.
+              Cuenta de prueba temporal: usa datos ficticios y una contraseña que no uses en otros sitios. Se perderá al recargar la página.
             </p>
           </header>
 
@@ -130,7 +133,7 @@ function Register() {
               error={emailError}
               valid={touched.email && email.length > 0 && !emailError}
               validMessage="Correo válido"
-              hint="Usa un correo real, sin dominios temporales."
+              hint="Usa un correo ficticio válido, sin dominios temporales."
               autoComplete="email"
               required
             />

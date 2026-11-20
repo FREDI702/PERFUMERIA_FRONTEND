@@ -1,5 +1,6 @@
 import { act, fireEvent, render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
+import { webcrypto } from 'node:crypto'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import Register from './Register.jsx'
 
@@ -14,6 +15,7 @@ function renderRegister() {
 describe('Register', () => {
   afterEach(() => {
     vi.useRealTimers()
+    vi.unstubAllGlobals()
   })
 
   it('muestra el error cuando las contraseñas no coinciden', async () => {
@@ -71,7 +73,7 @@ describe('Register', () => {
   })
 
   it('crea la cuenta correctamente con los datos válidos', async () => {
-    vi.useFakeTimers()
+    vi.stubGlobal('crypto', webcrypto)
     const { container } = renderRegister()
 
     const uniqueEmail = `cliente${Date.now()}@gmail.com`
@@ -92,14 +94,8 @@ describe('Register', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Crear cuenta' }))
 
-    await act(async () => {
-      await vi.advanceTimersByTimeAsync(600)
-    })
-
-    expect(screen.getByText(/¡Cuenta creada con éxito!/)).toBeTruthy()
-
-    await act(async () => {
-      await vi.advanceTimersByTimeAsync(1600)
-    })
+    expect(await screen.findByText(/¡Cuenta creada con éxito!/)).toBeTruthy()
+    expect(passwordInputs[0].value).toBe('')
+    expect(passwordInputs[1].value).toBe('')
   })
 })

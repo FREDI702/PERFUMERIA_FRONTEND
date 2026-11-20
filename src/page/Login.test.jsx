@@ -85,4 +85,17 @@ describe('Login', () => {
       await vi.advanceTimersByTimeAsync(1500)
     })
   })
+
+  it('permite iniciar sesión con la cuenta simulada de administrador', async () => {
+    vi.useFakeTimers()
+    renderLogin()
+
+    fillCredentials('admin@perfumerianectar.com', 'AdminPerfume2026!')
+
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(700)
+    })
+
+    expect(screen.getByText('¡Bienvenido a Perfumería Néctar!')).toBeTruthy()
+  })
 })

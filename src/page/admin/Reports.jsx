@@ -9,48 +9,36 @@ const TABS = [
   { id: 'rendimiento', label: 'Rendimiento' },
 ]
 
-function Metric({ label, value, detail }) {
-  return (
-    <div className="rounded-2xl border border-line bg-card p-4">
-      <p className="text-xs font-semibold uppercase tracking-[0.12em] text-muted">
-        {label}
-      </p>
-      <p className="mt-2 font-serif text-3xl font-bold text-ink">{value}</p>
-      {detail ? <p className="mt-1 text-xs text-muted">{detail}</p> : null}
-    </div>
-  )
-}
-
 function Security() {
   return (
     <div className="space-y-5">
-      <div className="rounded-2xl border border-ok bg-ok-bg px-4 py-3 text-sm font-semibold text-ok">
-        La información de la tienda está protegida y cada rol accede solo a lo que le corresponde.
+      <div className="rounded-2xl border border-warn bg-warn-bg px-4 py-3 text-sm font-semibold text-warn">
+        Este proyecto es solo frontend: el inicio de sesión y los roles se simulan en el navegador. Las restricciones mostradas corresponden a la interfaz y a los datos de prueba.
       </div>
       <Table head={['Módulo', 'Cliente', 'Administrador', 'Estado']}>
         <tr className="text-ink">
           <td className="px-4 py-3 font-semibold">Catálogo</td>
           <td className="px-4 py-3">Permitido</td>
           <td className="px-4 py-3">Permitido</td>
-          <td className="px-4 py-3 text-ok">Protegido</td>
+          <td className="px-4 py-3">Ruta disponible</td>
         </tr>
         <tr className="text-ink">
           <td className="px-4 py-3 font-semibold">Carrito y pedidos</td>
           <td className="px-4 py-3">Permitido</td>
           <td className="px-4 py-3">Denegado</td>
-          <td className="px-4 py-3 text-ok">Protegido</td>
+          <td className="px-4 py-3">Restricción de interfaz</td>
         </tr>
         <tr className="text-ink">
           <td className="px-4 py-3 font-semibold">Perfumes, ventas y envíos</td>
           <td className="px-4 py-3">Denegado</td>
           <td className="px-4 py-3">Permitido</td>
-          <td className="px-4 py-3 text-ok">Protegido</td>
+          <td className="px-4 py-3">Restricción de interfaz</td>
         </tr>
         <tr className="text-ink">
           <td className="px-4 py-3 font-semibold">Sesión inactiva</td>
           <td className="px-4 py-3">30 min</td>
           <td className="px-4 py-3">30 min</td>
-          <td className="px-4 py-3 text-ok">Activo</td>
+          <td className="px-4 py-3">Control en el navegador</td>
         </tr>
       </Table>
     </div>
@@ -59,27 +47,12 @@ function Security() {
 
 function Availability() {
   return (
-    <div className="space-y-5">
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <Metric label="Estado" value="En línea" detail="Servicio disponible" />
-        <Metric label="Tiempo activo" value="03:00" detail="Últimas 3 horas" />
-        <Metric label="Último respaldo" value="03:00" detail="Respaldo automático" />
-        <Metric label="Usuarios activos" value="25" detail="En este momento" />
-      </div>
-      <Table head={['Respaldo', 'Fecha', 'Estado', 'Tamaño']}>
-        <tr className="text-ink">
-          <td className="px-4 py-3 font-semibold">Respaldo diario</td>
-          <td className="px-4 py-3">05/11/2026 · 03:00</td>
-          <td className="px-4 py-3 text-ok">Completado</td>
-          <td className="px-4 py-3">120 MB</td>
-        </tr>
-        <tr className="text-ink">
-          <td className="px-4 py-3 font-semibold">Respaldo semanal</td>
-          <td className="px-4 py-3">03/11/2026 · 03:00</td>
-          <td className="px-4 py-3 text-ok">Completado</td>
-          <td className="px-4 py-3">480 MB</td>
-        </tr>
-      </Table>
+    <div className="rounded-2xl border border-warn bg-warn-bg px-4 py-4 text-sm text-warn">
+      <h2 className="font-semibold">Datos de demostración</h2>
+      <p className="mt-2">
+        Los datos y las operaciones se simulan en el navegador y se reinician al
+        recargar. Este proyecto frontend no administra servidores ni respaldos.
+      </p>
     </div>
   )
 }
@@ -88,29 +61,29 @@ function Compatibility() {
   return (
     <div className="space-y-5">
       <div className="rounded-2xl border border-warn bg-warn-bg px-4 py-3 text-sm font-semibold text-warn">
-        Si tu navegador es demasiado antiguo, actualízalo a la última versión de Chrome, Edge, Firefox o Safari.
+        Estos son objetivos de compatibilidad; no se han ejecutado pruebas manuales en todos los navegadores y dispositivos.
       </div>
       <div className="grid gap-5 lg:grid-cols-2">
         <Table head={['Navegador', 'Versión', 'Estado']}>
           <tr className="text-ink">
             <td className="px-4 py-3 font-semibold">Chrome</td>
-            <td className="px-4 py-3">Última</td>
-            <td className="px-4 py-3 text-ok">Compatible</td>
+            <td className="px-4 py-3">Actual</td>
+            <td className="px-4 py-3">Pendiente de prueba manual</td>
           </tr>
           <tr className="text-ink">
             <td className="px-4 py-3 font-semibold">Edge</td>
-            <td className="px-4 py-3">Última</td>
-            <td className="px-4 py-3 text-ok">Compatible</td>
+            <td className="px-4 py-3">Actual</td>
+            <td className="px-4 py-3">Pendiente de prueba manual</td>
           </tr>
           <tr className="text-ink">
             <td className="px-4 py-3 font-semibold">Firefox</td>
-            <td className="px-4 py-3">Última</td>
-            <td className="px-4 py-3 text-ok">Compatible</td>
+            <td className="px-4 py-3">Actual</td>
+            <td className="px-4 py-3">Pendiente de prueba manual</td>
           </tr>
           <tr className="text-ink">
             <td className="px-4 py-3 font-semibold">Safari</td>
-            <td className="px-4 py-3">Última</td>
-            <td className="px-4 py-3 text-ok">Compatible</td>
+            <td className="px-4 py-3">Actual</td>
+            <td className="px-4 py-3">Pendiente de prueba manual</td>
           </tr>
         </Table>
 
@@ -118,17 +91,17 @@ function Compatibility() {
           <tr className="text-ink">
             <td className="px-4 py-3 font-semibold">Celular</td>
             <td className="px-4 py-3">375 px</td>
-            <td className="px-4 py-3 text-ok">Sin scroll horizontal</td>
+            <td className="px-4 py-3">Pendiente de prueba manual</td>
           </tr>
           <tr className="text-ink">
             <td className="px-4 py-3 font-semibold">Tablet</td>
             <td className="px-4 py-3">768 px</td>
-            <td className="px-4 py-3 text-ok">Sin scroll horizontal</td>
+            <td className="px-4 py-3">Pendiente de prueba manual</td>
           </tr>
           <tr className="text-ink">
             <td className="px-4 py-3 font-semibold">Laptop</td>
             <td className="px-4 py-3">1100 px</td>
-            <td className="px-4 py-3 text-ok">Sin scroll horizontal</td>
+            <td className="px-4 py-3">Pendiente de prueba manual</td>
           </tr>
         </Table>
       </div>
@@ -139,27 +112,23 @@ function Compatibility() {
 function Performance() {
   return (
     <div className="space-y-5">
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <Metric label="Catálogo" value="1.8 s" detail="Carga con 50 usuarios" />
-        <Metric label="Búsqueda" value="2.6 s" detail="Respuesta del filtro" />
-        <Metric label="Carrito" value="2.5 s" detail="Confirmación de compra" />
-        <Metric label="Disponibilidad" value="200 OK" detail="Última verificación" />
+      <div className="rounded-2xl border border-warn bg-warn-bg px-4 py-4 text-sm text-warn">
+        <h2 className="font-semibold">Rendimiento aún no medido</h2>
+        <p className="mt-2">
+          Aún no se han ejecutado mediciones reproducibles con datos
+          representativos. No se muestran estimaciones como resultados.
+        </p>
       </div>
-      <Table head={['Acción', 'Tiempo', 'Objetivo']}>
+      <Table head={['Acción', 'Objetivo de la historia', 'Estado']}>
         <tr className="text-ink">
           <td className="px-4 py-3 font-semibold">Abrir catálogo</td>
-          <td className="px-4 py-3">1.8 s</td>
-          <td className="px-4 py-3 text-ok">≤ 3 s</td>
+          <td className="px-4 py-3">≤ 3 s</td>
+          <td className="px-4 py-3">Pendiente de medición</td>
         </tr>
         <tr className="text-ink">
-          <td className="px-4 py-3 font-semibold">Filtrar perfumes</td>
-          <td className="px-4 py-3">2.6 s</td>
-          <td className="px-4 py-3 text-ok">≤ 3 s</td>
-        </tr>
-        <tr className="text-ink">
-          <td className="px-4 py-3 font-semibold">Registrar venta</td>
-          <td className="px-4 py-3">2.5 s</td>
-          <td className="px-4 py-3 text-ok">≤ 3 s</td>
+          <td className="px-4 py-3 font-semibold">Catálogo con 50 usuarios</td>
+          <td className="px-4 py-3">≤ 3 s</td>
+          <td className="px-4 py-3">Pendiente de definir entorno de prueba</td>
         </tr>
       </Table>
     </div>

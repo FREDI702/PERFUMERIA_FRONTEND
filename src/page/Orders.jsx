@@ -1,5 +1,6 @@
 import { Fragment, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+import Banner from '../components/Banner.jsx'
 import Card from '../components/Card.jsx'
 import Table from '../components/Table.jsx'
 import { getSession } from '../auth/session.js'
@@ -18,6 +19,7 @@ function Orders() {
   const [sales, setSales] = useState([])
   const [shipments, setShipments] = useState([])
   const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState('')
   const [expandedId, setExpandedId] = useState(null)
 
   useEffect(() => {
@@ -31,7 +33,12 @@ function Orders() {
           setLoading(false)
         }
       },
-    )
+    ).catch(() => {
+      if (active) {
+        setLoadError('Ocurrió un error inesperado. Inténtalo de nuevo más tarde.')
+        setLoading(false)
+      }
+    })
 
     return () => {
       active = false
@@ -39,6 +46,8 @@ function Orders() {
   }, [session?.email])
 
   const getStatus = (saleId) => {
+    const sale = sales.find((entry) => entry.id === saleId)
+    if (sale?.checkout?.delivery === 'recojo') return 'Recojo en tienda'
     const shipment = shipments.find((entry) => entry.saleId === saleId)
     return shipment?.status ?? 'Pendiente'
   }
@@ -55,9 +64,15 @@ function Orders() {
         Consulta el estado de tus compras y el detalle de cada pedido.
       </p>
 
+      {loadError ? (
+        <div className="mt-4">
+          <Banner type="error">{loadError}</Banner>
+        </div>
+      ) : null}
+
       {loading ? (
         <div className="mt-6 h-40 animate-pulse rounded-3xl border border-line bg-card" />
-      ) : sales.length === 0 ? (
+      ) : loadError ? null : sales.length === 0 ? (
         <Card className="mt-6 text-center">
           <p className="font-serif text-2xl font-bold text-ink">
             Todavía no tienes pedidos
@@ -80,7 +95,7 @@ function Orders() {
               'Fecha',
               'Productos',
               'Total',
-              'Estado',
+              'Entrega',
               'Acciones',
             ]}
           >
@@ -127,6 +142,16 @@ function Orders() {
                         <p className="text-xs font-semibold uppercase tracking-[0.12em] text-muted">
                           Detalle del pedido #{sale.id}
                         </p>
+                        {sale.checkout ? (
+                          <div className="mt-2 space-y-1 text-sm text-ink">
+                            <p>Pago simulado: {sale.checkout.payment} · {sale.paymentStatus}</p>
+                            <p>Comprobante solicitado: {sale.checkout.receipt}. No se emite un comprobante real.</p>
+                            <p>Entrega: {sale.checkout.delivery === 'delivery' ? 'A domicilio' : 'Recojo en tienda'}</p>
+                            {sale.checkout.delivery === 'delivery' ? (
+                              <p>Dirección: {sale.checkout.address}, {sale.checkout.district}{sale.checkout.province || sale.checkout.city ? `, ${sale.checkout.province || sale.checkout.city}` : ''}{sale.checkout.department ? `, ${sale.checkout.department}` : ''} · Referencia: {sale.checkout.reference}</p>
+                            ) : null}
+                          </div>
+                        ) : null}
                         <ul className="mt-2 space-y-2 text-sm text-ink">
                           {sale.items.map((item) => (
                             <li

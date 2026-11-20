@@ -1,6 +1,93 @@
+import { getSession, hasRole } from './session.js'
+import { normalizeCheckout, validateCheckout } from '../utils/checkout.js'
+import {
+  validateEmail,
+  validateName,
+  validatePasswordStrength,
+  validatePrice,
+  validateStock,
+} from '../utils/validaciones.js'
+
 const wait = (ms = 350) => new Promise((resolve) => window.setTimeout(resolve, ms))
 
 const clone = (value) => JSON.parse(JSON.stringify(value))
+const CATEGORIES = new Set(['Mujer', 'Hombre', 'Unisex'])
+const SHIPMENT_STATUSES = new Set(['Pendiente', 'En camino', 'Entregado'])
+const RECEPTION_CONDITIONS = new Set(['Bueno', 'Con observaciones', 'Dañado'])
+
+function isValidDate(value) {
+  if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+    return false
+  }
+
+  const date = new Date(`${value}T00:00:00.000Z`)
+  return !Number.isNaN(date.getTime()) && date.toISOString().slice(0, 10) === value
+}
+
+function requireAdministrator() {
+  if (!hasRole('Administrador')) {
+    throw new Error('acceso')
+  }
+}
+
+function requireSession() {
+  const session = getSession()
+
+  if (!session) {
+    throw new Error('sesion')
+  }
+
+  return session
+}
+
+function normalizeItems(items, { allowInsufficientStock = false } = {}) {
+  if (!Array.isArray(items) || items.length === 0) {
+    throw new Error('vacia')
+  }
+
+  const quantities = new Map()
+
+  for (const item of items) {
+    if (
+      !item ||
+      !Number.isSafeInteger(item.productId) ||
+      !Number.isSafeInteger(item.quantity) ||
+      item.quantity <= 0
+    ) {
+      throw new Error('cantidad')
+    }
+
+    quantities.set(
+      item.productId,
+      (quantities.get(item.productId) ?? 0) + item.quantity,
+    )
+  }
+
+  return [...quantities].map(([productId, quantity]) => {
+    const product = products.find((entry) => entry.id === productId)
+
+    if (!product) {
+      throw new Error('producto')
+    }
+
+    if (!Number.isSafeInteger(quantity)) {
+      throw new Error('cantidad')
+    }
+
+    if (!allowInsufficientStock && quantity > product.stock) {
+      throw new Error(
+        `Stock insuficiente: solo hay ${product.stock} unidad(es) de «${product.name}».`,
+      )
+    }
+
+    return {
+      productId: product.id,
+      name: product.name,
+      price: product.price,
+      quantity,
+    }
+  })
+}
 
 const users = [
   {
@@ -23,7 +110,7 @@ const users = [
   },
   {
     email: 'admin@perfumerianectar.com',
-    password: 'Admin2026!',
+    password: 'AdminPerfume2026!',
     name: 'Administrador Néctar',
     role: 'Administrador',
   },
@@ -40,7 +127,7 @@ let products = [
     stock: 12,
     sold: 48,
     tone: 'gold',
-    image: '',
+    image: '/perfumes/lattafa-khamrah-qahwa.jpg',
   },
   {
     id: 2,
@@ -52,7 +139,7 @@ let products = [
     stock: 8,
     sold: 35,
     tone: 'rose',
-    image: '',
+    image: '/perfumes/loccitane-rose.jpg',
   },
   {
     id: 3,
@@ -64,7 +151,7 @@ let products = [
     stock: 4,
     sold: 61,
     tone: 'forest',
-    image: '',
+    image: '/perfumes/dior-sauvage.jpg',
   },
   {
     id: 4,
@@ -76,7 +163,7 @@ let products = [
     stock: 18,
     sold: 22,
     tone: 'amber',
-    image: '',
+    image: '/perfumes/chanel-allure-homme-sport.png',
   },
   {
     id: 5,
@@ -88,7 +175,7 @@ let products = [
     stock: 6,
     sold: 30,
     tone: 'gold',
-    image: '',
+    image: '/perfumes/lbel-mithyka.jpg',
   },
   {
     id: 6,
@@ -100,7 +187,7 @@ let products = [
     stock: 2,
     sold: 54,
     tone: 'sky',
-    image: '',
+    image: '/perfumes/natura-essencial-oud.jpg',
   },
   {
     id: 7,
@@ -112,7 +199,7 @@ let products = [
     stock: 14,
     sold: 19,
     tone: 'amber',
-    image: '',
+    image: '/perfumes/esika-vanilla.jpg',
   },
   {
     id: 8,
@@ -124,7 +211,7 @@ let products = [
     stock: 3,
     sold: 27,
     tone: 'forest',
-    image: '',
+    image: '/perfumes/cyzone-all-black.jpg',
   },
 ]
 
@@ -206,15 +293,34 @@ let nextSaleId = 4
 let nextShipmentId = 3
 let nextReceptionId = 3
 
+async function derivePassword(password, salt) {
+  const key = await crypto.subtle.importKey(
+    'raw',
+    new TextEncoder().encode(password),
+    'PBKDF2',
+    false,
+    ['deriveBits'],
+  )
+  const bits = await crypto.subtle.deriveBits(
+    { name: 'PBKDF2', hash: 'SHA-256', salt, iterations: 210000 },
+    key,
+    256,
+  )
+  return Array.from(new Uint8Array(bits), (byte) => byte.toString(16).padStart(2, '0')).join('')
+}
+
 export async function login({ email, password }) {
   await wait(700)
 
   const normalizedEmail = email.trim().toLowerCase()
-  const user = users.find(
-    (item) => item.email === normalizedEmail && item.password === password,
-  )
+  const user = users.find((item) => item.email === normalizedEmail)
 
-  if (!user) {
+  if (
+    !user ||
+    (user.passwordSalt
+      ? await derivePassword(password, user.passwordSalt) !== user.passwordHash
+      : user.password !== password)
+  ) {
     throw new Error('credenciales')
   }
 
@@ -229,7 +335,25 @@ export async function login({ email, password }) {
 export async function register({ name, email, password }) {
   await wait(600)
 
+  if (
+    typeof name !== 'string' ||
+    validateName(name) ||
+    typeof email !== 'string' ||
+    typeof password !== 'string' ||
+    validateEmail(email) ||
+    validatePasswordStrength(password)
+  ) {
+    throw new Error('datos')
+  }
+
   const normalizedEmail = email.trim().toLowerCase()
+
+  if (users.some((user) => user.email === normalizedEmail)) {
+    throw new Error('duplicate')
+  }
+
+  const passwordSalt = crypto.getRandomValues(new Uint8Array(16))
+  const passwordHash = await derivePassword(password, passwordSalt)
 
   if (users.some((user) => user.email === normalizedEmail)) {
     throw new Error('duplicate')
@@ -237,7 +361,8 @@ export async function register({ name, email, password }) {
 
   const user = {
     email: normalizedEmail,
-    password,
+    passwordSalt,
+    passwordHash,
     name: name.trim(),
     role: 'Cliente',
   }
@@ -258,6 +383,8 @@ export async function getProducts() {
 
 export async function getClients() {
   await wait()
+  requireAdministrator()
+
   return users
     .filter((user) => user.role === 'Cliente')
     .map((user) => ({ email: user.email, name: user.name }))
@@ -265,14 +392,33 @@ export async function getClients() {
 
 export async function createPerfume(data) {
   await wait(400)
+  requireAdministrator()
+
+  if (
+    !data ||
+    typeof data.name !== 'string' ||
+    !data.name.trim() ||
+    typeof data.brand !== 'string' ||
+    !data.brand.trim() ||
+    !CATEGORIES.has(data.category) ||
+    validatePrice(data.price) ||
+    validateStock(data.stock)
+  ) {
+    throw new Error('datos')
+  }
 
   const product = {
     id: nextProductId,
-    sold: 0,
-    image: '',
-    ...data,
+    name: data.name.trim(),
+    brand: data.brand.trim(),
+    category: data.category,
+    presentation:
+      typeof data.presentation === 'string' ? data.presentation.trim() : '',
     price: Number(data.price),
     stock: Number(data.stock),
+    sold: 0,
+    image: typeof data.image === 'string' ? data.image : '',
+    tone: typeof data.tone === 'string' ? data.tone : 'gold',
   }
 
   nextProductId += 1
@@ -283,25 +429,51 @@ export async function createPerfume(data) {
 
 export async function updatePerfume(id, data) {
   await wait(400)
+  requireAdministrator()
 
-  products = products.map((product) => {
-    if (product.id !== id) {
-      return product
-    }
+  const existing = products.find((product) => product.id === id)
 
-    return {
-      ...product,
-      ...data,
-      price: Number(data.price),
-      stock: Number(data.stock),
-    }
-  })
+  if (!existing) {
+    throw new Error('producto')
+  }
+
+  if (
+    !data ||
+    typeof data.name !== 'string' ||
+    !data.name.trim() ||
+    typeof data.brand !== 'string' ||
+    !data.brand.trim() ||
+    !CATEGORIES.has(data.category) ||
+    validatePrice(data.price) ||
+    validateStock(data.stock)
+  ) {
+    throw new Error('datos')
+  }
+
+  products = products.map((product) =>
+    product.id === id
+      ? {
+          ...product,
+          name: data.name.trim(),
+          brand: data.brand.trim(),
+          category: data.category,
+          presentation:
+            typeof data.presentation === 'string'
+              ? data.presentation.trim()
+              : product.presentation,
+          price: Number(data.price),
+          stock: Number(data.stock),
+          image: typeof data.image === 'string' ? data.image : product.image,
+        }
+      : product,
+  )
 
   return clone(products.find((product) => product.id === id))
 }
 
 export async function deletePerfume(id) {
   await wait(400)
+  requireAdministrator()
 
   const hasSales = sales.some((sale) =>
     sale.items.some((item) => item.productId === id),
@@ -317,48 +489,53 @@ export async function deletePerfume(id) {
 
 export async function getSales() {
   await wait()
+  requireAdministrator()
   return clone(sales)
 }
 
 export async function getSalesByClient(email) {
   await wait()
+  const session = requireSession()
   const normalizedEmail = email.trim().toLowerCase()
+
+  if (
+    session.role !== 'Administrador' &&
+    normalizedEmail !== session.email.toLowerCase()
+  ) {
+    throw new Error('acceso')
+  }
+
   return clone(sales.filter((sale) => sale.clientEmail === normalizedEmail))
 }
 
-export async function createSale({ clientEmail, items }) {
+export async function createSale({ clientEmail, items, checkout }) {
   await wait(500)
+  const session = requireSession()
 
-  const client = users.find((user) => user.email === clientEmail)
+  const normalizedEmail =
+    typeof clientEmail === 'string' ? clientEmail.trim().toLowerCase() : ''
+
+  if (
+    session.role !== 'Administrador' &&
+    normalizedEmail !== session.email.toLowerCase()
+  ) {
+    throw new Error('acceso')
+  }
+
+  const client = users.find((user) => user.email === normalizedEmail)
 
   if (!client) {
     throw new Error('cliente')
   }
 
-  if (!items.length) {
-    throw new Error('vacia')
+  if (session.role !== 'Administrador' && !checkout) {
+    throw new Error('datos')
+  }
+  if (checkout && (typeof checkout !== 'object' || Object.keys(validateCheckout(checkout)).length > 0)) {
+    throw new Error('datos')
   }
 
-  const normalizedItems = items.map((item) => {
-    const product = products.find((entry) => entry.id === item.productId)
-
-    if (!product) {
-      throw new Error('producto')
-    }
-
-    if (item.quantity > product.stock) {
-      throw new Error(
-        `Stock insuficiente: solo hay ${product.stock} unidad(es) de «${product.name}».`,
-      )
-    }
-
-    return {
-      productId: product.id,
-      name: product.name,
-      price: product.price,
-      quantity: item.quantity,
-    }
-  })
+  const normalizedItems = normalizeItems(items)
 
   products = products.map((product) => {
     const line = normalizedItems.find((item) => item.productId === product.id)
@@ -386,6 +563,7 @@ export async function createSale({ clientEmail, items }) {
     date: new Date().toISOString(),
     items: normalizedItems,
     total: Number(total.toFixed(2)),
+    ...(checkout ? { checkout: normalizeCheckout(checkout), paymentStatus: 'Pendiente de pago' } : {}),
   }
 
   nextSaleId += 1
@@ -394,31 +572,74 @@ export async function createSale({ clientEmail, items }) {
   return clone(sale)
 }
 
+export async function confirmSalePayment(id) {
+  await wait()
+  requireAdministrator()
+  const sale = sales.find((entry) => entry.id === id)
+  if (!sale || sale.paymentStatus !== 'Pendiente de pago') {
+    throw new Error('pago')
+  }
+  sale.paymentStatus = 'Pago confirmado'
+  return clone(sale)
+}
+
 export async function getShipments() {
   await wait()
-  return clone(shipments)
+  const session = requireSession()
+
+  if (session.role === 'Administrador') {
+    return clone(shipments)
+  }
+
+  const clientSaleIds = new Set(
+    sales
+      .filter((sale) => sale.clientEmail === session.email.toLowerCase())
+      .map((sale) => sale.id),
+  )
+
+  return clone(shipments.filter((shipment) => clientSaleIds.has(shipment.saleId)))
 }
 
 export async function createShipment(data) {
   await wait(400)
+  requireAdministrator()
 
-  const sale = sales.find((entry) => entry.id === Number(data.saleId))
+  const saleId = Number(data?.saleId)
+  const sale = sales.find((entry) => entry.id === saleId)
 
   if (!sale) {
     throw new Error('venta')
+  }
+
+  if (sale.checkout?.delivery === 'recojo') {
+    throw new Error('recojo')
   }
 
   if (shipments.some((shipment) => shipment.saleId === sale.id)) {
     throw new Error('envio-existente')
   }
 
+  if (
+    typeof data.address !== 'string' ||
+    !data.address.trim() ||
+    typeof data.city !== 'string' ||
+    !data.city.trim() ||
+    typeof data.phone !== 'string' ||
+    !/^\d{9}$/.test(data.phone.trim()) ||
+    !SHIPMENT_STATUSES.has(data.status)
+  ) {
+    throw new Error('datos')
+  }
+
   const shipment = {
-    ...data,
     id: nextShipmentId,
     saleId: sale.id,
     clientName: sale.clientName,
-    date: new Date().toISOString(),
+    address: data.address.trim(),
+    city: data.city.trim(),
     phone: data.phone.trim(),
+    status: data.status,
+    date: new Date().toISOString(),
   }
 
   nextShipmentId += 1
@@ -429,6 +650,15 @@ export async function createShipment(data) {
 
 export async function updateShipmentStatus(id, status) {
   await wait(250)
+  requireAdministrator()
+
+  if (!SHIPMENT_STATUSES.has(status)) {
+    throw new Error('estado')
+  }
+
+  if (!shipments.some((shipment) => shipment.id === id)) {
+    throw new Error('envio')
+  }
 
   shipments = shipments.map((shipment) =>
     shipment.id === id ? { ...shipment, status } : shipment,
@@ -439,28 +669,37 @@ export async function updateShipmentStatus(id, status) {
 
 export async function getReceptions() {
   await wait()
+  requireAdministrator()
   return clone(receptions)
 }
 
 export async function createReception({ date, provider, items }) {
   await wait(500)
+  requireAdministrator()
 
-  if (!items.length) {
-    throw new Error('vacia')
+  if (!isValidDate(date) || typeof provider !== 'string' || !provider.trim()) {
+    throw new Error('datos')
   }
 
-  const normalizedItems = items.map((item) => {
+  const normalizedItems = normalizeItems(items, {
+    allowInsufficientStock: true,
+  }).map((item) => {
+    const source = items.find((entry) => entry.productId === item.productId)
     const product = products.find((entry) => entry.id === item.productId)
 
-    if (!product) {
-      throw new Error('producto')
+    if (!RECEPTION_CONDITIONS.has(source?.condition)) {
+      throw new Error('estado')
+    }
+
+    if (!Number.isSafeInteger(product.stock + item.quantity)) {
+      throw new Error('cantidad')
     }
 
     return {
-      productId: product.id,
-      name: product.name,
-      quantity: Number(item.quantity),
-      condition: item.condition,
+      productId: item.productId,
+      name: item.name,
+      quantity: item.quantity,
+      condition: source.condition,
     }
   })
 

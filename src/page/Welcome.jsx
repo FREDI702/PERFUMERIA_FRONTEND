@@ -23,10 +23,19 @@ function Welcome() {
     <main className="flex min-h-screen flex-col bg-cream min-[900px]:flex-row">
       <PerfumeScene />
 
-      <section className="flex flex-1 flex-col justify-center bg-cream px-6 py-10 min-[900px]:w-1/2 min-[900px]:px-16 min-[900px]:py-16">
-        <div className="mx-auto flex w-full max-w-[520px] flex-1 flex-col justify-center">
+      <section className="relative flex flex-1 flex-col justify-center overflow-hidden bg-cream px-6 py-10 min-[900px]:w-1/2 min-[900px]:px-16 min-[900px]:py-16">
+        <div
+          className="pointer-events-none absolute -right-24 top-8 h-72 w-72 rounded-full bg-gold/10 blur-3xl"
+          aria-hidden="true"
+        />
+        <div
+          className="pointer-events-none absolute -left-20 bottom-0 h-72 w-72 rounded-full bg-secondary/10 blur-3xl"
+          aria-hidden="true"
+        />
+
+        <div className="relative mx-auto flex w-full max-w-[520px] flex-1 flex-col justify-center">
           <p className="text-xs font-semibold uppercase tracking-[0.3em] text-gold-dark">
-            Acceso seguro
+            Demostración
           </p>
           <h1 className="mt-4 font-serif text-4xl font-bold leading-tight text-ink min-[900px]:text-6xl">
             <span className="text-gold-effect block">Bienvenido a</span>
@@ -34,19 +43,21 @@ function Welcome() {
               Perfumería Néctar
             </span>
           </h1>
-          <p className="mt-5 text-base text-muted">Elige cómo deseas continuar.</p>
+          <p className="mt-5 text-base text-muted">
+            Sitio de prueba: no ingreses datos personales ni contraseñas reales y no realices pagos.
+          </p>
 
           <nav aria-label="Opciones de acceso" className="mt-10 space-y-3">
             <Link
               to="/login"
-              className="flex min-h-14 w-full items-center justify-between rounded-xl bg-primary px-5 font-bold text-card transition hover:bg-ink focus:outline-none focus:ring-4 focus:ring-lavender"
+              className="welcome-action-dark flex min-h-14 w-full items-center justify-between rounded-xl bg-primary px-5 font-bold text-card transition hover:bg-ink focus:outline-none focus:ring-4 focus:ring-lavender"
             >
               Iniciar sesión
               <Arrow />
             </Link>
             <Link
               to="/registro"
-              className="flex min-h-14 w-full items-center justify-between rounded-xl bg-secondary px-5 font-bold text-card transition hover:opacity-90 focus:outline-none focus:ring-4 focus:ring-line"
+              className="welcome-action-blue flex min-h-14 w-full items-center justify-between rounded-xl bg-secondary px-5 font-bold text-card transition hover:opacity-90 focus:outline-none focus:ring-4 focus:ring-line"
             >
               Crear cuenta
               <Arrow />

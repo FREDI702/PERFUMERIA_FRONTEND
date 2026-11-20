@@ -19,6 +19,7 @@ const EMPTY_FORM = {
   name: '',
   brand: '',
   category: 'Unisex',
+  presentation: '',
   price: '',
   stock: '',
   image: '',
@@ -52,6 +53,10 @@ function Perfumes() {
     getProducts().then((data) => {
       if (active) {
         setProducts(data)
+      }
+    }).catch(() => {
+      if (active) {
+        setError('Ocurrió un error inesperado. Inténtalo de nuevo más tarde.')
       }
     })
 
@@ -88,6 +93,9 @@ function Perfumes() {
       setForm((current) => ({ ...current, image: String(reader.result) }))
       setError('')
     }
+    reader.onerror = () => {
+      setError('No se pudo leer la foto. Inténtalo de nuevo.')
+    }
     reader.readAsDataURL(file)
   }
 
@@ -103,6 +111,7 @@ function Perfumes() {
       name: product.name,
       brand: product.brand,
       category: product.category,
+      presentation: product.presentation ?? '',
       price: String(product.price),
       stock: String(product.stock),
       image: product.image ?? '',
@@ -150,6 +159,7 @@ function Perfumes() {
       name: form.name.trim(),
       brand: form.brand.trim(),
       category: form.category,
+      presentation: form.presentation.trim(),
       price: Number(form.price),
       stock: Number(form.stock),
       image: form.image,
@@ -261,6 +271,15 @@ function Perfumes() {
               onChange={(event) => updateField('category', event.target.value)}
               options={CATEGORY_OPTIONS}
               required
+            />
+
+            <Field
+              id="perfume-presentation"
+              label="Presentación (ml)"
+              value={form.presentation}
+              onChange={(event) => updateField('presentation', event.target.value)}
+              hint="Por ejemplo, 100 ml. Opcional."
+              placeholder="100 ml"
             />
 
             <div className="grid gap-4 sm:grid-cols-2">

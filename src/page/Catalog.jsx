@@ -16,6 +16,7 @@ const SORT_OPTIONS = [
 function Catalog() {
   const [products, setProducts] = useState([])
   const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState('')
   const [search, setSearch] = useState('')
   const [category, setCategory] = useState('Todas')
   const [brand, setBrand] = useState('Todas')
@@ -28,6 +29,11 @@ function Catalog() {
     getProducts().then((data) => {
       if (active) {
         setProducts(data)
+        setLoading(false)
+      }
+    }).catch(() => {
+      if (active) {
+        setLoadError('Ocurrió un error inesperado. Inténtalo de nuevo más tarde.')
         setLoading(false)
       }
     })
@@ -153,21 +159,28 @@ function Catalog() {
           <Banner type="success">{added}</Banner>
         </div>
       ) : null}
+      {loadError ? (
+        <div className="mt-4">
+          <Banner type="error">{loadError}</Banner>
+        </div>
+      ) : null}
 
-      <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
-        <p className="text-sm font-semibold text-ink">
-          {filteredProducts.length} productos encontrados
-        </p>
-        {activeFilters.length > 0 ? (
-          <button
-            type="button"
-            onClick={clearFilters}
-            className="min-h-11 rounded-xl border border-line px-4 text-sm font-semibold text-eyebrow transition hover:bg-surface focus:outline-none focus:ring-4 focus:ring-surface"
-          >
-            Limpiar filtros
-          </button>
-        ) : null}
-      </div>
+      {!loading && !loadError ? (
+        <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
+          <p className="text-sm font-semibold text-ink">
+            {filteredProducts.length} productos encontrados
+          </p>
+          {activeFilters.length > 0 ? (
+            <button
+              type="button"
+              onClick={clearFilters}
+              className="min-h-11 rounded-xl border border-line px-4 text-sm font-semibold text-eyebrow transition hover:bg-surface focus:outline-none focus:ring-4 focus:ring-surface"
+            >
+              Limpiar filtros
+            </button>
+          ) : null}
+        </div>
+      ) : null}
 
       {loading ? (
         <div className="mt-4 grid gap-5 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
@@ -178,7 +191,7 @@ function Catalog() {
             />
           ))}
         </div>
-      ) : filteredProducts.length === 0 ? (
+      ) : loadError ? null : filteredProducts.length === 0 ? (
         <div className="mt-4 rounded-3xl border border-line bg-card p-8 text-center shadow-sm">
           <p className="font-serif text-2xl font-bold text-ink">
             0 productos encontrados

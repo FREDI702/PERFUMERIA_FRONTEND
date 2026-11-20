@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest'
-import { validateEmail, validatePassword } from './validaciones.js'
+import {
+  validateEmail,
+  validatePassword,
+  validatePrice,
+  validateQuantity,
+  validateStock,
+} from './validaciones.js'
 
 describe('validateEmail', () => {
   it('rechaza correo sin dominio', () => {
@@ -38,5 +44,21 @@ describe('validatePassword', () => {
 
   it('acepta clave de 12 caracteres', () => {
     expect(validatePassword('a'.repeat(12))).toBe('')
+  })
+})
+
+describe('validaciones de inventario y cantidades', () => {
+  it('rechaza valores no finitos y existencias fraccionarias', () => {
+    expect(validatePrice('Infinity')).toBe('Ingresa un precio válido.')
+    expect(validateStock('1.5')).toBe('Ingresa un stock válido.')
+    expect(validateStock('Infinity')).toBe('Ingresa un stock válido.')
+  })
+
+  it('exige cantidades enteras positivas dentro del stock', () => {
+    expect(validateQuantity('1.5')).toBe(
+      'La cantidad debe ser un número entero mayor que 0.',
+    )
+    expect(validateQuantity('3', 2)).toBe('Solo hay 2 unidad(es) disponibles.')
+    expect(validateQuantity('2', 2)).toBe('')
   })
 })

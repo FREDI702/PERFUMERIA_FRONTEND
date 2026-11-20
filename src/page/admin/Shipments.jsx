@@ -52,7 +52,11 @@ function Shipments() {
         setShipments(shipmentsData)
         setSales(salesData)
       },
-    )
+    ).catch(() => {
+      if (active) {
+        setError('Ocurrió un error inesperado. Inténtalo de nuevo más tarde.')
+      }
+    })
 
     return () => {
       active = false
@@ -60,7 +64,8 @@ function Shipments() {
   }, [])
 
   const availableSales = sales.filter(
-    (sale) => !shipments.some((shipment) => shipment.saleId === sale.id),
+    (sale) => sale.checkout?.delivery !== 'recojo' &&
+      !shipments.some((shipment) => shipment.saleId === sale.id),
   )
 
   const handleSubmit = async (event) => {
