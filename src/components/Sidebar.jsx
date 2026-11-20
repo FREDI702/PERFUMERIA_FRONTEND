@@ -1,7 +1,7 @@
 import { useState, useSyncExternalStore } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
 import { clearSession, getSession } from '../auth/session.js'
-import { getCartSnapshot, subscribe } from '../cart/cartStore.js'
+import { clearCart, getCartSnapshot, subscribe } from '../cart/cartStore.js'
 import ConfirmDialog from './ConfirmDialog.jsx'
 
 const CLIENT_LINKS = [
@@ -31,8 +31,10 @@ function Sidebar() {
   const links = session?.role === 'Administrador' ? ADMIN_LINKS : CLIENT_LINKS
   const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0)
 
-  const handleLogout = () => {
+  const handleLogout = (event) => {
+    event.stopPropagation()
     clearSession()
+    clearCart()
     setConfirming(false)
     navigate('/', { replace: true })
   }

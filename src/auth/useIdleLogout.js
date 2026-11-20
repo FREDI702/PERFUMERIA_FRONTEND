@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { clearCart } from '../cart/cartStore.js'
 import { clearSession, getSession, touchSession } from './session.js'
 
 const INACTIVITY_MS = 30 * 60 * 1000
@@ -27,6 +28,7 @@ export function useIdleLogout() {
 
       if (Date.now() - lastActivity >= INACTIVITY_MS) {
         clearSession()
+        clearCart()
         navigate('/sesion-expirada', { replace: true })
         return true
       }

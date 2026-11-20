@@ -3,12 +3,20 @@ import { describe, expect, it } from 'vitest'
 import Reports from './Reports.jsx'
 
 describe('reportes administrativos', () => {
-  it('aclara que la autenticación mock no protege datos reales', () => {
+  it('aclara que la autenticación y los roles son simulados en el frontend', () => {
     render(<Reports />)
 
     expect(
-      screen.getByText(/La autenticación de esta versión es simulada/),
+      screen.getByText(/Este proyecto es solo frontend/),
     ).toBeTruthy()
+  })
+
+  it('aclara que los datos mock se reinician al recargar', () => {
+    render(<Reports />)
+    fireEvent.click(screen.getByRole('tab', { name: 'Disponibilidad' }))
+
+    expect(screen.getByText('Datos de demostración')).toBeTruthy()
+    expect(screen.getByText(/se reinician al recargar/)).toBeTruthy()
   })
 
   it('no presenta como reales métricas que todavía no se midieron', () => {

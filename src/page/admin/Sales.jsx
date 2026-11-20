@@ -6,6 +6,7 @@ import Field from '../../components/Field.jsx'
 import Table from '../../components/Table.jsx'
 import {
   createSale,
+  confirmSalePayment,
   getClients,
   getProducts,
   getSales,
@@ -25,6 +26,22 @@ function Sales() {
   const [success, setSuccess] = useState('')
   const [saving, setSaving] = useState(false)
   const [expandedId, setExpandedId] = useState(null)
+  const [confirmingId, setConfirmingId] = useState(null)
+
+  const handleConfirmPayment = async (id) => {
+    setConfirmingId(id)
+    setError('')
+    setSuccess('')
+    try {
+      const updated = await confirmSalePayment(id)
+      setSales((current) => current.map((sale) => sale.id === id ? updated : sale))
+      setSuccess(`Pago simulado del pedido #${id} confirmado.`)
+    } catch {
+      setError('No se pudo confirmar el pago. Actualiza la página e inténtalo de nuevo.')
+    } finally {
+      setConfirmingId(null)
+    }
+  }
 
   const loadData = async () => {
     const [clientsData, productsData, salesData] = await Promise.all([
@@ -53,7 +70,11 @@ function Sales() {
         setSales(salesData)
         setProductId(String(productsData[0]?.id ?? ''))
       },
-    )
+    ).catch(() => {
+      if (active) {
+        setError('Ocurrió un error inesperado. Inténtalo de nuevo más tarde.')
+      }
+    })
 
     return () => {
       active = false
@@ -326,6 +347,26 @@ function Sales() {
                   {expandedId === sale.id ? (
                     <tr className="bg-surface">
                       <td colSpan={5} className="px-4 py-4">
+                        {sale.checkout ? (
+                          <div className="mb-4 space-y-1 text-sm text-ink">
+                            <p>Pedido simulado · Pago: {sale.checkout.payment} · {sale.paymentStatus}</p>
+                            <p>Cliente: {sale.checkout.firstName} {sale.checkout.lastName} · Teléfono: {sale.checkout.phone}</p>
+                            <p>Entrega: {sale.checkout.delivery === 'delivery' ? 'A domicilio' : 'Recojo en tienda'}</p>
+                            {sale.checkout.delivery === 'delivery' ? (
+                              <p>{sale.checkout.address}, {sale.checkout.district}{sale.checkout.province || sale.checkout.city ? `, ${sale.checkout.province || sale.checkout.city}` : ''}{sale.checkout.department ? `, ${sale.checkout.department}` : ''} · Referencia: {sale.checkout.reference}</p>
+                            ) : null}
+                            <p>{sale.checkout.receipt === 'boleta'
+                              ? `Boleta · DNI: ${sale.checkout.dni}`
+                              : `Factura · RUC: ${sale.checkout.ruc} · Razón social: ${sale.checkout.businessName}`}</p>
+                            {sale.paymentStatus === 'Pendiente de pago' ? (
+                              <Button onClick={() => handleConfirmPayment(sale.id)}
+                                disabled={confirmingId !== null} loading={confirmingId === sale.id}
+                                loadingText="Confirmando…" className="mt-3">
+                                Confirmar pago simulado
+                              </Button>
+                            ) : null}
+                          </div>
+                        ) : null}
                         <ul className="space-y-2 text-sm text-ink">
                           {sale.items.map((item) => (
                             <li

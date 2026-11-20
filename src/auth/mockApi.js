@@ -1,4 +1,5 @@
 import { getSession, hasRole } from './session.js'
+import { normalizeCheckout, validateCheckout } from '../utils/checkout.js'
 import {
   validateEmail,
   validateName,
@@ -109,7 +110,7 @@ const users = [
   },
   {
     email: 'admin@perfumerianectar.com',
-    password: 'Admin2026!',
+    password: 'AdminPerfume2026!',
     name: 'Administrador Néctar',
     role: 'Administrador',
   },
@@ -126,7 +127,7 @@ let products = [
     stock: 12,
     sold: 48,
     tone: 'gold',
-    image: '',
+    image: '/perfumes/lattafa-khamrah-qahwa.jpg',
   },
   {
     id: 2,
@@ -138,7 +139,7 @@ let products = [
     stock: 8,
     sold: 35,
     tone: 'rose',
-    image: '',
+    image: '/perfumes/loccitane-rose.jpg',
   },
   {
     id: 3,
@@ -150,7 +151,7 @@ let products = [
     stock: 4,
     sold: 61,
     tone: 'forest',
-    image: '',
+    image: '/perfumes/dior-sauvage.jpg',
   },
   {
     id: 4,
@@ -162,7 +163,7 @@ let products = [
     stock: 18,
     sold: 22,
     tone: 'amber',
-    image: '',
+    image: '/perfumes/chanel-allure-homme-sport.png',
   },
   {
     id: 5,
@@ -174,7 +175,7 @@ let products = [
     stock: 6,
     sold: 30,
     tone: 'gold',
-    image: '',
+    image: '/perfumes/lbel-mithyka.jpg',
   },
   {
     id: 6,
@@ -186,7 +187,7 @@ let products = [
     stock: 2,
     sold: 54,
     tone: 'sky',
-    image: '',
+    image: '/perfumes/natura-essencial-oud.jpg',
   },
   {
     id: 7,
@@ -198,7 +199,7 @@ let products = [
     stock: 14,
     sold: 19,
     tone: 'amber',
-    image: '',
+    image: '/perfumes/esika-vanilla.jpg',
   },
   {
     id: 8,
@@ -210,7 +211,7 @@ let products = [
     stock: 3,
     sold: 27,
     tone: 'forest',
-    image: '',
+    image: '/perfumes/cyzone-all-black.jpg',
   },
 ]
 
@@ -384,7 +385,8 @@ export async function createPerfume(data) {
     name: data.name.trim(),
     brand: data.brand.trim(),
     category: data.category,
-    presentation: typeof data.presentation === 'string' ? data.presentation : '',
+    presentation:
+      typeof data.presentation === 'string' ? data.presentation.trim() : '',
     price: Number(data.price),
     stock: Number(data.stock),
     sold: 0,
@@ -428,6 +430,10 @@ export async function updatePerfume(id, data) {
           name: data.name.trim(),
           brand: data.brand.trim(),
           category: data.category,
+          presentation:
+            typeof data.presentation === 'string'
+              ? data.presentation.trim()
+              : product.presentation,
           price: Number(data.price),
           stock: Number(data.stock),
           image: typeof data.image === 'string' ? data.image : product.image,
@@ -475,7 +481,7 @@ export async function getSalesByClient(email) {
   return clone(sales.filter((sale) => sale.clientEmail === normalizedEmail))
 }
 
-export async function createSale({ clientEmail, items }) {
+export async function createSale({ clientEmail, items, checkout }) {
   await wait(500)
   const session = requireSession()
 
@@ -493,6 +499,13 @@ export async function createSale({ clientEmail, items }) {
 
   if (!client) {
     throw new Error('cliente')
+  }
+
+  if (session.role !== 'Administrador' && !checkout) {
+    throw new Error('datos')
+  }
+  if (checkout && (typeof checkout !== 'object' || Object.keys(validateCheckout(checkout)).length > 0)) {
+    throw new Error('datos')
   }
 
   const normalizedItems = normalizeItems(items)
@@ -523,11 +536,23 @@ export async function createSale({ clientEmail, items }) {
     date: new Date().toISOString(),
     items: normalizedItems,
     total: Number(total.toFixed(2)),
+    ...(checkout ? { checkout: normalizeCheckout(checkout), paymentStatus: 'Pendiente de pago' } : {}),
   }
 
   nextSaleId += 1
   sales = [sale, ...sales]
 
+  return clone(sale)
+}
+
+export async function confirmSalePayment(id) {
+  await wait()
+  requireAdministrator()
+  const sale = sales.find((entry) => entry.id === id)
+  if (!sale || sale.paymentStatus !== 'Pendiente de pago') {
+    throw new Error('pago')
+  }
+  sale.paymentStatus = 'Pago confirmado'
   return clone(sale)
 }
 
@@ -557,6 +582,10 @@ export async function createShipment(data) {
 
   if (!sale) {
     throw new Error('venta')
+  }
+
+  if (sale.checkout?.delivery === 'recojo') {
+    throw new Error('recojo')
   }
 
   if (shipments.some((shipment) => shipment.saleId === sale.id)) {

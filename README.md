@@ -16,7 +16,7 @@ npm run dev
 
 ## Validación
 
-Las pruebas de validaciones y de la interfaz de inicio de sesión están junto al código en `src/utils/validaciones.test.js` y `src/page/Login.test.jsx`. Vitest las ejecuta con `npm test`.
+Las pruebas de validaciones, rutas protegidas, sesión, inactividad, reglas del mock API e interfaces de acceso y reportes están junto al código. Vitest las ejecuta con `npm test`.
 
 ```sh
 npm run lint
@@ -33,7 +33,9 @@ El workflow de GitHub Actions ejecuta lint, pruebas y build en cada `push` y pul
 - [Diagrama de despliegue](./docs/despliegue.md)
 - [Acuerdos del equipo para completar en conjunto](./ACUERDOS.md)
 
-Los diagramas documentan únicamente lo implementado. El hosting de producción y la API son pendientes; los campos de acuerdos deben ser definidos por el equipo.
+Los diagramas documentan únicamente lo implementado. Este repositorio contiene el frontend y usa datos simulados en el navegador; no incluye backend ni API. El hosting de producción no está configurado y los campos de acuerdos deben ser definidos por el equipo.
+
+El carrito permite registrar pedidos simulados con tarjeta, Yape o efectivo, entrega a domicilio o recojo, y datos para boleta o factura. Para entrega se seleccionan departamento, provincia y distrito usando una copia local del [listado de ubigeos del INEI](https://www.datosabiertos.gob.pe/node/15695/dataset); su actualización depende de renovar esta copia. Opcionalmente, el cliente puede autorizar la ubicación del navegador y enviar las coordenadas a Nominatim de OpenStreetMap para obtener una dirección aproximada editable; no se guardan las coordenadas. No se procesan cobros ni se emiten comprobantes; el QR es solo una referencia y no debe usarse para transferir dinero. El administrador puede confirmar el estado simulado del pago en el detalle de ventas. Los datos y estados se mantienen solo en memoria y se pierden al recargar.
 
 ## Evidencias pendientes del equipo
 

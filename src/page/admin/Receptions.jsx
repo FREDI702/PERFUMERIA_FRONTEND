@@ -55,7 +55,11 @@ function Receptions() {
         setProducts(productsData)
         setProductId(String(productsData[0]?.id ?? ''))
       },
-    )
+    ).catch(() => {
+      if (active) {
+        setError('Ocurrió un error inesperado. Inténtalo de nuevo más tarde.')
+      }
+    })
 
     return () => {
       active = false

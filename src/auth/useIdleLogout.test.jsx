@@ -1,6 +1,7 @@
 import { act, fireEvent, render, screen } from '@testing-library/react'
 import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { addToCart, clearCart, getCartSnapshot } from '../cart/cartStore.js'
 import { clearSession, getSession, saveSession } from './session.js'
 import { useIdleLogout } from './useIdleLogout.js'
 
@@ -53,6 +54,7 @@ describe('cierre por inactividad', () => {
     vi.useFakeTimers()
     vi.setSystemTime(new Date('2026-11-10T12:00:00.000Z'))
     sessionStorage.clear()
+    clearCart()
     saveSession({
       email: 'cliente@gmail.com',
       name: 'Cliente',
@@ -62,10 +64,19 @@ describe('cierre por inactividad', () => {
   })
 
   afterEach(() => {
+    clearCart()
     vi.useRealTimers()
   })
 
   it('cierra la sesión al superar 30 minutos sin actividad', async () => {
+    addToCart({
+      id: 1,
+      name: 'Perfume de prueba',
+      brand: 'Néctar',
+      presentation: '100 ml',
+      price: 189.9,
+      stock: 5,
+    })
     renderProtectedPage()
 
     await act(async () => {
@@ -75,6 +86,7 @@ describe('cierre por inactividad', () => {
     expect(screen.getByText('/sesion-expirada')).toBeTruthy()
     expect(screen.getByText('Tu sesión expiró')).toBeTruthy()
     expect(getSession()).toBeNull()
+    expect(getCartSnapshot()).toHaveLength(0)
   })
 
   it('no renueva una sesión vencida al recibir una interacción tardía', () => {

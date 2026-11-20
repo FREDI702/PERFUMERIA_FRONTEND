@@ -5,6 +5,7 @@ import {
   createReception,
   createSale,
   createShipment,
+  confirmSalePayment,
   deletePerfume,
   getProducts,
   getReceptions,
@@ -40,6 +41,53 @@ describe('reglas de negocio del mock API', () => {
 
   afterEach(() => {
     vi.useRealTimers()
+  })
+
+  it('registra pedidos pendientes y solo permite al administrador confirmar el pago', async () => {
+    vi.useFakeTimers()
+    saveSession({ email: 'cliente.perfumeria@gmail.com', name: 'Cliente', role: 'Cliente', token: 'mock' })
+    const checkout = {
+      firstName: 'Ana', lastName: 'Pérez', phone: '987654321', delivery: 'recojo',
+      payment: 'yape', receipt: 'boleta', dni: '12345678',
+      address: 'no guardar', ruc: '12345678901',
+    }
+    await rejectWithTimers(createSale({ clientEmail: 'cliente.perfumeria@gmail.com', items: [{ productId: 1, quantity: 1 }] }), 'datos')
+    const sale = await resolveWithTimers(createSale({
+      clientEmail: 'cliente.perfumeria@gmail.com', items: [{ productId: 1, quantity: 1 }], checkout,
+    }))
+    expect(sale.paymentStatus).toBe('Pendiente de pago')
+    expect(sale.checkout.address).toBeUndefined()
+    expect(sale.checkout.ruc).toBeUndefined()
+    await rejectWithTimers(confirmSalePayment(sale.id), 'acceso')
+    saveSession({ email: 'admin@perfumerianectar.com', name: 'Administrador', role: 'Administrador', token: 'mock' })
+    await rejectWithTimers(createShipment({
+      saleId: sale.id, address: 'Dirección', city: 'Lima', phone: '987654321', status: 'Pendiente',
+    }), 'recojo')
+    expect((await resolveWithTimers(confirmSalePayment(sale.id))).paymentStatus).toBe('Pago confirmado')
+    await rejectWithTimers(confirmSalePayment(sale.id), 'pago')
+  })
+
+  it('guarda la ciudad elegida para entregas a domicilio', async () => {
+    vi.useFakeTimers()
+    saveSession({ email: 'cliente.perfumeria@gmail.com', name: 'Cliente', role: 'Cliente', token: 'mock' })
+    const checkout = {
+      firstName: 'Ana', lastName: 'Pérez', phone: '987654321', delivery: 'delivery',
+      province: 'TRUJILLO', district: 'VICTOR LARCO HERRERA', department: 'LA LIBERTAD',
+      address: 'Av. Central', reference: 'Casa azul',
+      payment: 'efectivo', receipt: 'boleta', dni: '12345678',
+    }
+    await rejectWithTimers(createSale({
+      clientEmail: 'cliente.perfumeria@gmail.com', items: [{ productId: 1, quantity: 1 }],
+      checkout: { ...checkout, province: 'LIMA' },
+    }), 'datos')
+    const sale = await resolveWithTimers(createSale({
+      clientEmail: 'cliente.perfumeria@gmail.com', items: [{ productId: 1, quantity: 1 }], checkout,
+    }))
+    expect(sale.checkout.province).toBe('TRUJILLO')
+    expect(sale.checkout.district).toBe('VICTOR LARCO HERRERA')
+    expect(sale.checkout.department).toBe('LA LIBERTAD')
+    expect((await resolveWithTimers(getSalesByClient('cliente.perfumeria@gmail.com')))
+      .find((entry) => entry.id === sale.id).checkout.province).toBe('TRUJILLO')
   })
 
   it('valida operaciones y mantiene el inventario consistente', async () => {
@@ -92,6 +140,7 @@ describe('reglas de negocio del mock API', () => {
         name: '  Esencia Nueva  ',
         brand: '  Néctar  ',
         category: 'Unisex',
+        presentation: ' 100 ml ',
         price: 99.9,
         stock: 0,
       }),
@@ -100,6 +149,7 @@ describe('reglas de negocio del mock API', () => {
     expect(newPerfume.id).not.toBe(100)
     expect(newPerfume.sold).toBe(0)
     expect(newPerfume.name).toBe('Esencia Nueva')
+    expect(newPerfume.presentation).toBe('100 ml')
 
     const updatedPerfume = await resolveWithTimers(
       updatePerfume(newPerfume.id, {
@@ -112,6 +162,20 @@ describe('reglas de negocio del mock API', () => {
     )
 
     expect(updatedPerfume.name).toBe('Esencia Actualizada')
+    expect(updatedPerfume.presentation).toBe('100 ml')
+
+    const updatedPresentation = await resolveWithTimers(
+      updatePerfume(newPerfume.id, {
+        name: 'Esencia Actualizada',
+        brand: 'Néctar',
+        category: 'Mujer',
+        presentation: '75 ml',
+        price: 110,
+        stock: 2,
+      }),
+    )
+
+    expect(updatedPresentation.presentation).toBe('75 ml')
 
     await rejectWithTimers(
       register({

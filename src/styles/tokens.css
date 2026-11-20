@@ -2,6 +2,7 @@
   --color-bg-1: #2b2030;
   --color-bg-2: #4a3550;
   --color-bg-3: #654d68;
+  --color-space-deep: #050b22;
   --color-card: #fafafa;
   --color-ink: #1f1b24;
   --color-muted: #6b6470;
@@ -33,6 +34,28 @@
   --color-bottle-sky: #6f8fb5;
   --color-bottle-sky-light: #b9cee4;
   --color-bottle-sky-dark: #3f5c7a;
+  --color-perfume-liquid-highlight: #ffeaa9;
+  --color-perfume-liquid: #f1c95c;
+  --color-perfume-liquid-shade: #c7972f;
+  --color-perfume-glass-light: #fff5de;
+  --color-perfume-glass-shadow: #223066;
+  --color-perfume-key-light: #ffe0ad;
+  --color-perfume-fill-light: #9db8ff;
+  --color-perfume-back-light: #ffc978;
+  --color-perfume-collar: #d6b25e;
+  --color-perfume-collar-emissive: #3a2a08;
+  --color-perfume-cap: #08080c;
+  --color-perfume-liquid-emissive: #a8741a;
+  --color-perfume-bubble: #fffdf5;
+  --color-perfume-meniscus: #fff0c2;
+  --color-perfume-neutral-white: #ffffff;
+  --color-perfume-blue-glass: #1f8fe8;
+  --color-perfume-blue-base: #2f9bf0;
+  --color-perfume-noir-liquid: #c4690a;
+  --color-perfume-noir-emissive: #8a4300;
+  --color-perfume-noir-metal: #232325;
+  --color-perfume-noir-cap-top: #4a4a4e;
+  --color-perfume-silver: #e6e2dc;
   --font-sans: Inter, "Segoe UI", system-ui, sans-serif;
   --font-serif: Fraunces, Georgia, serif;
 }

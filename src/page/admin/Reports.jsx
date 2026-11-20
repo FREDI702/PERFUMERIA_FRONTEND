@@ -13,7 +13,7 @@ function Security() {
   return (
     <div className="space-y-5">
       <div className="rounded-2xl border border-warn bg-warn-bg px-4 py-3 text-sm font-semibold text-warn">
-        La autenticación de esta versión es simulada en el frontend. Para proteger datos reales se requiere validar cada permiso en un backend.
+        Este proyecto es solo frontend: el inicio de sesión y los roles se simulan en el navegador. Las restricciones mostradas corresponden a la interfaz y a los datos de prueba.
       </div>
       <Table head={['Módulo', 'Cliente', 'Administrador', 'Estado']}>
         <tr className="text-ink">
@@ -48,11 +48,10 @@ function Security() {
 function Availability() {
   return (
     <div className="rounded-2xl border border-warn bg-warn-bg px-4 py-4 text-sm text-warn">
-      <h2 className="font-semibold">Infraestructura no conectada</h2>
+      <h2 className="font-semibold">Datos de demostración</h2>
       <p className="mt-2">
-        Esta versión usa datos simulados en el navegador. El estado del servidor,
-        el tiempo activo, los usuarios concurrentes y los respaldos no están
-        disponibles para medir desde el frontend.
+        Los datos y las operaciones se simulan en el navegador y se reinician al
+        recargar. Este proyecto frontend no administra servidores ni respaldos.
       </p>
     </div>
   )
@@ -116,8 +115,8 @@ function Performance() {
       <div className="rounded-2xl border border-warn bg-warn-bg px-4 py-4 text-sm text-warn">
         <h2 className="font-semibold">Rendimiento aún no medido</h2>
         <p className="mt-2">
-          Los tiempos requieren una prueba de carga con infraestructura y datos
-          representativos. No se muestran mediciones simuladas como resultados.
+          Aún no se han ejecutado mediciones reproducibles con datos
+          representativos. No se muestran estimaciones como resultados.
         </p>
       </div>
       <Table head={['Acción', 'Objetivo de la historia', 'Estado']}>
@@ -129,7 +128,7 @@ function Performance() {
         <tr className="text-ink">
           <td className="px-4 py-3 font-semibold">Catálogo con 50 usuarios</td>
           <td className="px-4 py-3">≤ 3 s</td>
-          <td className="px-4 py-3">Pendiente de prueba de carga</td>
+          <td className="px-4 py-3">Pendiente de definir entorno de prueba</td>
         </tr>
       </Table>
     </div>

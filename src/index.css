@@ -37,24 +37,109 @@
   }
 }
 
+@keyframes welcome-shift-dark {
+  0%,
+  100% {
+    background-color: var(--color-primary);
+  }
+  50% {
+    background-color: color-mix(in srgb, var(--color-primary) 78%, var(--color-card));
+  }
+}
+
+@keyframes welcome-shift-blue {
+  0%,
+  100% {
+    background-color: var(--color-secondary);
+  }
+  50% {
+    background-color: color-mix(in srgb, var(--color-secondary) 82%, var(--color-space-deep));
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .welcome-action-dark {
+    animation: welcome-shift-dark 6s ease-in-out infinite;
+  }
+
+  .welcome-action-blue {
+    animation: welcome-shift-blue 6s ease-in-out infinite;
+  }
+}
+
 .perfume-scene-glow {
   background: radial-gradient(
     circle at 50% 42%,
-    var(--color-bg-3) 0%,
-    transparent 62%
+    var(--color-secondary) 0%,
+    transparent 68%
   );
 }
 
-.perfume-turn {
-  transform-style: preserve-3d;
+.perfume-scene-bg {
+  background:
+    radial-gradient(
+      circle at 50% 38%,
+      color-mix(in srgb, var(--color-secondary) 85%, transparent) 0%,
+      transparent 58%
+    ),
+    radial-gradient(
+      circle at 16% 8%,
+      color-mix(in srgb, var(--color-secondary) 72%, transparent) 0%,
+      transparent 42%
+    ),
+    linear-gradient(135deg, var(--color-primary) 0%, var(--color-space-deep) 100%);
 }
 
-@keyframes perfume-turn {
-  from {
-    transform: perspective(1200px) rotateY(-12deg) rotateX(2deg);
+.scene-stars {
+  background-image:
+    radial-gradient(circle at 8% 18%, var(--color-gold-light) 0 1px, transparent 1.6px),
+    radial-gradient(circle at 22% 72%, var(--color-card) 0 1px, transparent 1.6px),
+    radial-gradient(circle at 38% 12%, var(--color-gold-light) 0 1.5px, transparent 2.2px),
+    radial-gradient(circle at 68% 22%, var(--color-card) 0 1px, transparent 1.6px),
+    radial-gradient(circle at 82% 64%, var(--color-gold-light) 0 1px, transparent 1.6px),
+    radial-gradient(circle at 92% 32%, var(--color-card) 0 1px, transparent 1.6px),
+    radial-gradient(circle at 15% 45%, var(--color-gold-light) 0 1px, transparent 1.6px),
+    radial-gradient(circle at 55% 80%, var(--color-gold-light) 0 1px, transparent 1.6px),
+    radial-gradient(circle at 74% 88%, var(--color-card) 0 1px, transparent 1.6px);
+  opacity: 0.8;
+}
+
+.scene-stars-alt {
+  background-image:
+    radial-gradient(circle at 12% 32%, var(--color-card) 0 1px, transparent 1.4px),
+    radial-gradient(circle at 28% 16%, var(--color-gold-light) 0 1px, transparent 1.4px),
+    radial-gradient(circle at 46% 58%, var(--color-card) 0 1.5px, transparent 2px),
+    radial-gradient(circle at 62% 8%, var(--color-gold-light) 0 1px, transparent 1.4px),
+    radial-gradient(circle at 78% 42%, var(--color-card) 0 1px, transparent 1.4px),
+    radial-gradient(circle at 88% 78%, var(--color-gold-light) 0 1px, transparent 1.4px),
+    radial-gradient(circle at 34% 88%, var(--color-card) 0 1px, transparent 1.4px),
+    radial-gradient(circle at 58% 34%, var(--color-gold-light) 0 1px, transparent 1.4px);
+  opacity: 0.5;
+}
+
+.sparkle {
+  clip-path: polygon(
+    50% 0%,
+    60% 40%,
+    100% 50%,
+    60% 60%,
+    50% 100%,
+    40% 60%,
+    0% 50%,
+    40% 40%
+  );
+  will-change: opacity, transform;
+}
+
+@keyframes sparkle-twinkle {
+  0%,
+  100% {
+    opacity: 0.35;
+    transform: scale(0.8) rotate(0deg);
   }
-  to {
-    transform: perspective(1200px) rotateY(12deg) rotateX(-2deg);
+  50% {
+    opacity: 1;
+    transform: scale(1.15) rotate(8deg);
   }
 }
 
@@ -90,11 +175,6 @@
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  .perfume-turn {
-    animation: perfume-turn 12s ease-in-out infinite alternate;
-    will-change: transform;
-  }
-
   .perfume-float {
     animation: perfume-float 7s ease-in-out infinite;
     will-change: transform;
@@ -109,4 +189,54 @@
     animation: halo-spin 40s linear infinite;
     will-change: transform;
   }
+
+  .sparkle {
+    animation: sparkle-twinkle 3.6s ease-in-out infinite;
+  }
+
+  .sparkle-delay {
+    animation-delay: -1.8s;
+  }
+}
+
+.bottle3d-scene {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  height: 100%;
+  min-height: 240px;
+  perspective: none;
+}
+
+.bottle3d-canvas-container {
+  width: 100%;
+  height: 100%;
+  cursor: grab;
+  touch-action: none;
+}
+
+.bottle3d-canvas-container:active {
+  cursor: grabbing;
+}
+
+.bottle3d-canvas-container:focus-visible {
+  outline: 2px solid var(--color-gold-light);
+  outline-offset: -2px;
+}
+
+.bottle3d-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.bottle3d-fallback {
+  display: grid;
+  width: 100%;
+  height: 100%;
+  min-height: 240px;
+  place-items: center;
+  color: var(--color-gold-light);
+  font-size: 0.875rem;
+  text-align: center;
 }
